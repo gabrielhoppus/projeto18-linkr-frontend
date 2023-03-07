@@ -1,15 +1,21 @@
 import styled from "styled-components";
-import { Link } from "react-router-dom";
-import { useState } from 'react';
+import { Link, useNavigate } from "react-router-dom";
+import { useContext, useState } from 'react';
 import swal from "sweetalert";
+import { AuthContext } from "../contexts/auth.context";
+import { ThreeDots } from "react-loader-spinner";
+import axios from "axios";
 
 export default function SignIn() {
+    const { API_URL, setToken } = useContext(AuthContext);
+    const navigate = useNavigate();
     const [form, setForm] = useState({
         email: '',
         password: ''
-    })
+    });
+    const [clicked, setClicked] = useState(false);
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
         const { password, email } = form;
         if (!email || !password)
@@ -19,7 +25,21 @@ export default function SignIn() {
                 icon: "error"
             });
         else {
-            console.log(form);
+            try {
+                setClicked(true);
+                const response =
+                    await axios.post(`${API_URL}/sign-in`, form);
+                setToken(response.data.token);
+                navigate('/timeline');
+            } catch (error) {
+                setClicked(false);
+                console.log(error.response.data);
+                swal({
+                    title: "Erro!",
+                    text: (error.response.data),
+                    icon: "error"
+                });
+            }
         }
     }
 
@@ -49,7 +69,13 @@ export default function SignIn() {
                     onChange={handleForm}
                     placeholder="password"
                 />
-                <button>Login</button>
+                <button type="submit" disabled={clicked}>{clicked ? <ThreeDots
+                    color="#183bad"
+                    wrapperStyle={{
+                        display: clicked ? 'flex' : 'none',
+                        justifyContent: 'center',
+                        alignItems : 'center'
+                }}/> :'Login'}</button>
                 <Link to={'/sign-up'}>First time? Create an account</Link>
             </Form>
         </Wrapper>
