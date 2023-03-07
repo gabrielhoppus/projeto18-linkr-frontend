@@ -1,17 +1,23 @@
 import styled from "styled-components";
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
 import swal from 'sweetalert';
+import axios from 'axios';
+import { AuthContext } from "../contexts/auth.context";
+import { ThreeDots } from "react-loader-spinner";
 
 export default function SignUp() {
+    const { API_URL } = useContext(AuthContext);
+    const navigate = useNavigate();
     const [form, setForm] = useState({
         email: '',
         password: '',
         username: '',
         picture: ''
     });
+    const [clicked, setClicked] = useState(false);
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
         const { username, password, email, picture } = form;
         if (!email || !password || !username || !picture)
@@ -21,7 +27,24 @@ export default function SignUp() {
                 icon: "error"
             });
         else {
-            console.log(form);
+            try {
+                setClicked(true);
+                const response = await axios.post(`${API_URL}/sign-up`, form);
+                swal({
+                    title: "Sucesso",
+                    text: response.data,
+                    icon: "success"
+                })
+                navigate('/');
+            } catch (error) {
+                setClicked(false);
+                console.log(error.response);
+                swal({
+                    title: "Erro!",
+                    text: error.response.data,
+                    icon: "error"
+                });
+            }
         }
     }
 
@@ -66,7 +89,14 @@ export default function SignUp() {
                     onChange={handleForm}
                     placeholder="picture url"
                 />
-                <button>Sign Up</button>
+                <button type="submit" disabled={clicked}>
+                    {clicked ? <ThreeDots
+                        color="#183bad"
+                        wrapperStyle={{
+                            display: clicked ? 'flex' : 'none',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                    }}/> : 'Sign Up'}</button>
                 <Link to={'/'}>Switch back to log in</Link>
             </Form>
         </Wrapper>
