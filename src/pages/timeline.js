@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import React from "react";
 
-export default function Home() {
+export default function Timeline() {
 
     const imgUser = "https://img1.ak.crunchyroll.com/i/spire3/38bed21ddb85f2ceb0a8986eea3485bd1661224942_large.jpg";
     const [chevron, setChevron] = useState("chevron-down");
@@ -55,7 +55,7 @@ export default function Home() {
                     <img src={imgUser} alt="user"></img>
                 </span>
             </Header>
-            <Timeline>
+            <TimelinePosts>
                 <title>timeline</title>
                 <Section>
                     <Posts>
@@ -96,7 +96,7 @@ export default function Home() {
                         </span>
                     </Trendings>
                 </Section>
-            </Timeline>
+            </TimelinePosts>
         </Body>
     );
 }
@@ -207,7 +207,7 @@ const Header = styled.header`
     }
     
 `;
-const Timeline = styled.div`
+const TimelinePosts = styled.div`
     width: 937px;
     display: flex;
     flex-direction: column;
