@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 
 export default function Home() {
@@ -7,15 +7,20 @@ export default function Home() {
     const imgUser = "https://img1.ak.crunchyroll.com/i/spire3/38bed21ddb85f2ceb0a8986eea3485bd1661224942_large.jpg";
     const [chevron, setChevron] = useState("chevron-down");
     const [iconUp, setIconUp] = useState(false);
-    const hashtags = [{ id: 1, name: "javascript" }, { id: 2, name: "react" }, { id: 3, name: "react-native" },
-    { id: 4, name: "material" }, { id: 5, name: "web-dev" }, { id: 6, name: "mobile" }, { id: 7, name: "css" },
-    { id: 8, name: "html" }, { id: 9, name: "node" }];
+    const [liked, setLiked] = useState("heart-outline");
+    const [cor, setColor] = useState("#ffffff");
+    const [likes, setLikes] = useState(247);
 
-    function logout(){
-        if(!iconUp){
+    const hashtags = [{ id: 1, name: "javascript" }, { id: 2, name: "react" }, { id: 3, name: "react-native" },
+    { id: 4, name: "material" }, { id: 5, name: "web-dev" }, { id: 6, name: "mobile" },
+    { id: 8, name: "html" }, { id: 9, name: "jorge" }];
+
+
+    function logout() {
+        if (!iconUp) {
             setChevron("chevron-up");
             setIconUp(true);
-        }else{
+        } else {
             setIconUp(false);
             setChevron("chevron-down");
         }
@@ -24,9 +29,17 @@ export default function Home() {
     function search(e) {
         e.preventdefault();
     }
-
     function publishPost(e) {
         e.preventdefault();
+    }
+    function likePost() {
+        if (liked === "heart") {
+            setLiked("heart-outline");
+            setColor("#ffffff");
+        } else {
+            setLiked("heart");
+            setColor("red");
+        }
     }
 
     return (
@@ -55,6 +68,25 @@ export default function Home() {
                                 <button type="submit" className="publishButton"><h4>Publish</h4></button>
                             </form>
                         </div>
+                        <Post>
+                            <div className="userPost">
+                                <img src={imgUser} alt="user"></img>
+                                <ion-icon onClick={likePost} style={{ color: cor }} name={liked}></ion-icon>
+                                <p className="likes">{`${likes} likes`}</p>
+                            </div>
+                            <div className="dataPost">
+                                <h4 className="userName">Saitama da Silva</h4>
+                                <p className="description">Muito maneiro esse tutorial de Material UI com React, deem uma olhada!</p>
+                                <UrlContent href="https://www.youtube.com/watch?v=xQtC3F8fH6g" style = {{textDecoration: 'none'}}>
+                                    <p className="urlTitle">Como aplicar o Material UI em um projeto React</p>
+                                    <p className="urlDescription">
+                                    Hey! I have moved this tutorial to my personal blog. Same content, new location. Sorry about making you click through to another page.
+                                    </p>
+                                    <p className="urlLink">https://www.youtube.com/watch?v=xQtC3F8fH6g</p>
+                                    <img src= "https://usemobile.com.br/wp-content/uploads/2022/08/react-native-logo-em-cores-claras.png" alt="image"></img>
+                                </UrlContent>
+                            </div>
+                        </Post>
                     </Posts>
                     <Trendings>
                         <p className="title">trending</p>
@@ -209,6 +241,7 @@ const Posts = styled.div`
         background: #FFFFFF;
         box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
         border-radius: 16px;
+        margin-bottom: 25px;
         img{
             width: 53px;
             height: 53px;
@@ -286,6 +319,7 @@ const Trendings = styled.aside`
     display: flex;
     flex-direction: column;
     width: 301px;
+    height: min-content;
     background: #171717;
     border-radius: 16px;
     .title, .allTags{
@@ -311,7 +345,7 @@ const Trendings = styled.aside`
         margin-bottom: 20px;
     }
     .allTags{
-        margin-bottom: 10px;
+        margin-bottom: 20px;
         .tags{
             margin-bottom: 5px;
             font-family: 'Lato';
@@ -324,4 +358,103 @@ const Trendings = styled.aside`
 
     }
 `;
+const Post = styled.div`
+    width: 611px;
+    height: 276px;
+    background: #171717;
+    display: flex;
+    box-sizing: border-box;
+    padding: 16px;
+    border-radius: 16px;
+    .userPost{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        img{
+        width: 53px;
+        height: 53px;
+        clip-path: circle(50.0% at 50% 50%);
+        margin-bottom: 12px;
+        margin-right: 15px;
+        }
+        ion-icon{
+            font-size: 25px;
+            margin-bottom: 5px;
+            &:hover{
+                cursor: pointer;
+            }
+        }
+        .likes{
+            font-family: 'Lato';
+            font-style: normal;
+            font-weight: 400;
+            font-size: 11px;
+            color: #FFFFFF;
+        }
 
+    }
+    .dataPost{
+        display: flex;
+        flex-direction: column;
+        .userName, .description{
+            font-family: 'Lato';
+            font-style: normal;
+            font-weight: 400;
+        }
+        .userName{
+            font-size: 19px;
+            line-height: 23px;
+            color: #FFFFFF;
+            margin-bottom: 5px;
+        }
+        .description{
+            font-size: 17px;
+            line-height: 20px;
+            color: #B7B7B7;
+            margin-bottom: 10px;
+        }
+    }
+        
+`;
+const UrlContent = styled.a`
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 503px;
+    height: 155px;
+    border: 1px solid #4D4D4D;
+    border-radius: 11px;
+    position: relative;
+    img{
+        position: absolute;
+        right: 0;
+        width: 155px;
+        height: 155px;
+        border-radius: 0px 11px 11px 0px;
+    }
+    .urlTitle, .urlDescription, .urlLink{
+        width:65%;
+        font-family: 'Lato';
+        font-style: normal;
+        font-weight: 400;
+        margin-left: 10px;
+    }
+    .urlTitle{
+        font-size: 16px;
+        line-height: 19px;
+        color: #CECECE;
+        margin-top: 24px;
+        margin-bottom: 5px;
+    }
+    .urlDescription{
+        font-size: 11px;
+        line-height: 13px;
+        color: #9B9595;
+        margin-bottom: 13px;
+    }
+    .urlLink{
+        font-size: 11px;
+        line-height: 13px;
+        color: #CECECE;
+    }
+`;
