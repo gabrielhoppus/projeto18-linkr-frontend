@@ -6,7 +6,7 @@ import { AuthContext } from "../contexts/auth.context";
 import DeleteModal from "../components/modal";
 import { useNavigate } from "react-router-dom";
 
-export default function Timeline() {
+export default function Timeline(){
   const navigate = useNavigate();
   const { API_URL, token, name, picture } = useContext(AuthContext);
   useEffect(() => {
@@ -25,8 +25,8 @@ export default function Timeline() {
   const [showLogout, setShowLogout] = useState(false);
   const [modalvisible, setModalvisible] = useState(false);
   const [editPost, setEditPost] = useState(false);
-	const [usage, setUsage] = useState(true);
-	const URLposts = `${API_URL}/posts`;
+  const [usage, setUsage] = useState(true);
+  const URLposts = `${API_URL}/posts`;
   const URLtrendings = `${API_URL}/hashtag`;
 
   const config = {
@@ -34,21 +34,6 @@ export default function Timeline() {
       Authorization: `Bearer ${token}`,
     },
   };
-  // useEffect(() => {
-  //   const promise = axios.get(URLposts, config);
-  //   promise.then((res) => {
-  //     setPosts(res.data);
-  //   });
-  //   //promise.catch((err) => { alert(err.response.data.message) })
-  // }, []);
-
-  // useEffect(() => {
-  //   const promise = axios.get(URLtrendings, config);
-  //   promise.then((res) => {
-  //     setHashtags(res.data);
-  //   });
-  //   //promise.catch((err) => { alert(err.response.data.message) })
-  // }, []);
     useEffect(() => {
         const promise = axios.get(URLposts, config)
         promise.then((res) => {
@@ -78,7 +63,7 @@ export default function Timeline() {
         promise.catch((err) => {
             alert(err.response.data.message);
         })
-
+    }
 
   function search(e) {
     e.preventdefault();
@@ -94,6 +79,9 @@ export default function Timeline() {
     }
   }
 
+  function logout(e){
+    e.preventdefault();
+  }
 
   return (
     <Body dataLength={posts.length > 2}>
