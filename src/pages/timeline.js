@@ -12,6 +12,7 @@ export default function Timeline() {
   const [cor, setColor] = useState("#ffffff");
   const [likes, setLikes] = useState(247);
   const [modalvisible, setModalvisible] = useState(false);
+  const [editPost, setEditPost] = useState(false);
   const hashtags = [
     { id: 1, name: "javascript" },
     { id: 2, name: "react" },
@@ -102,7 +103,7 @@ export default function Timeline() {
                   <h4 className="userName">Saitama da Silva</h4>
                   <IconContainer>
                     {" "}
-                    <Editicon>
+                    <Editicon onClick={() => setEditPost(!editPost)}>
                       <ion-icon name="create-outline"></ion-icon>
                     </Editicon>
                     <TrashIcon onClick={() => setModalvisible(!modalvisible)}>
@@ -111,10 +112,19 @@ export default function Timeline() {
                   </IconContainer>
                 </PostHeader>
 
-                <p className="description">
+                {editPost === true ? (
+                  <EditInput></EditInput>
+                ) : (
+                  <p className="description">
+                    Muito maneiro esse tutorial de Material UI com React, deem
+                    uma olhada!
+                  </p>
+                )}
+
+                {/* <p className="description">
                   Muito maneiro esse tutorial de Material UI com React, deem uma
                   olhada!
-                </p>
+                </p> */}
 
                 <UrlContent
                   href="https://www.youtube.com/watch?v=xQtC3F8fH6g"
@@ -543,4 +553,12 @@ const Editicon = styled.div`
 `;
 const IconContainer = styled.div`
   display: flex;
+`;
+const EditInput = styled.input`
+  border-radius: 7px;
+  margin: 7px 0;
+  height: 44px;
+  font-family: "Lato";
+  font-size: 18px;
+  padding-left: 7px;
 `;
