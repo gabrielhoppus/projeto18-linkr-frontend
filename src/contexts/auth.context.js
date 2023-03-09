@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
             setToken(localStorageToken);
             setName(decoded.username);
             setPicture(decoded.picture);
-            navigate('/timeline');
+            // navigate('/timeline');
         }
     }, [])
 
