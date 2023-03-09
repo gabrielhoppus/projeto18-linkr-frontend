@@ -1,45 +1,78 @@
 import styled from "styled-components";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import React from "react";
+import axios from "axios";
+import { AuthContext } from "../contexts/auth.context";
 import DeleteModal from "../components/modal";
 
 export default function Timeline() {
-  const imgUser =
-    "https://img1.ak.crunchyroll.com/i/spire3/38bed21ddb85f2ceb0a8986eea3485bd1661224942_large.jpg";
+  const { API_URL, token, name, picture } = useContext(AuthContext);
   const [chevron, setChevron] = useState("chevron-down");
   const [iconUp, setIconUp] = useState(false);
   const [liked, setLiked] = useState("heart-outline");
   const [cor, setColor] = useState("#ffffff");
   const [likes, setLikes] = useState(247);
+  const [posts, setPosts] = useState([]);
+  const [hashtags, setHashtags] = useState([]);
+  const [publishURL, setPubrishURL] = useState("");
+  const [comment, setComment] = useState("");
+  const [showLogout, setShowLogout] = useState(false);
   const [modalvisible, setModalvisible] = useState(false);
   const [editPost, setEditPost] = useState(false);
-  const hashtags = [
-    { id: 1, name: "javascript" },
-    { id: 2, name: "react" },
-    { id: 3, name: "react-native" },
-    { id: 4, name: "material" },
-    { id: 5, name: "web-dev" },
-    { id: 6, name: "mobile" },
-    { id: 8, name: "html" },
-    { id: 9, name: "jorge" },
-  ];
+
+  const URLposts = `${API_URL}/posts`;
+  const URLtrendings = `${API_URL}/hashtag`;
+
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  useEffect(() => {
+    const promise = axios.get(URLposts, config);
+    promise.then((res) => {
+      setPosts(res.data);
+    });
+    //promise.catch((err) => { alert(err.response.data.message) })
+  }, []);
+
+  useEffect(() => {
+    const promise = axios.get(URLtrendings, config);
+    promise.then((res) => {
+      setHashtags(res.data);
+    });
+    //promise.catch((err) => { alert(err.response.data.message) })
+  }, []);
+
+  function publishPost(e) {
+    e.preventdefault();
+    const body = { publishURL, comment };
+    const promise = axios.post(URLposts, body, config);
+    promise.then((res) => {
+      console.log(res.data);
+    });
+    promise.catch((err) => {
+      //alert(err.response.data.message);
+    });
+  }
 
   function logout() {
     if (!iconUp) {
       setChevron("chevron-up");
       setIconUp(true);
+      setShowLogout(true);
     } else {
       setIconUp(false);
       setChevron("chevron-down");
+      setShowLogout(false);
     }
   }
 
   function search(e) {
     e.preventdefault();
   }
-  function publishPost(e) {
-    e.preventdefault();
-  }
+
   function likePost() {
     if (liked === "heart") {
       setLiked("heart-outline");
@@ -51,7 +84,7 @@ export default function Timeline() {
   }
 
   return (
-    <Body>
+    <Body dataLength={posts.length > 2}>
       <Header>
         <h1>linkr</h1>
         <form onSubmit={search}>
@@ -62,45 +95,49 @@ export default function Timeline() {
         </form>
         <span>
           <ion-icon name={chevron} onClick={logout}></ion-icon>
-          <img src={imgUser} alt="user"></img>
+          <img src={picture} alt="user"></img>
         </span>
       </Header>
+      <Logout showLogout={showLogout}>Logout</Logout>
       <TimelinePosts>
         <title>timeline</title>
         <Section>
           <Posts>
             <div className="publish">
-              <img src={imgUser} alt="user"></img>
+              <img src={picture} alt="user"></img>
               <form onSubmit={publishPost}>
                 <h3>What are you going to share today?</h3>
                 <input
                   className="input inpLink"
                   type="text"
                   placeholder="http://..."
+                  onChange={(e) => setPubrishURL(e.target.value)}
+                  required
                 ></input>
                 <input
                   className="input inpText"
                   type="text"
                   placeholder="Awesome article about #javascript"
+                  onChange={(e) => setComment(e.target.value)}
                 ></input>
                 <button type="submit" className="publishButton">
                   <h4>Publish</h4>
                 </button>
               </form>
             </div>
-            <Post>
-              <div className="userPost">
-                <img src={imgUser} alt="user"></img>
-                <ion-icon
-                  onClick={likePost}
-                  style={{ color: cor }}
-                  name={liked}
-                ></ion-icon>
-                <p className="likes">{`${likes} likes`}</p>
-              </div>
-              <div className="dataPost">
-                <PostHeader>
-                  <h4 className="userName">Saitama da Silva</h4>
+            {posts.map((i) => (
+              <Post key={i.id}>
+                <div className="userPost">
+                  <img src={picture} alt="user"></img>
+                  <ion-icon
+                    onClick={likePost}
+                    style={{ color: cor }}
+                    name={liked}
+                  ></ion-icon>
+                  <p className="likes">{`${likes} likes`}</p>
+                </div>
+                <div className="dataPost">
+                  <h4 className="userName">{name}</h4>
                   <IconContainer>
                     {" "}
                     <Editicon onClick={() => setEditPost(!editPost)}>
@@ -110,44 +147,25 @@ export default function Timeline() {
                       <ion-icon name="trash-outline"></ion-icon>
                     </TrashIcon>
                   </IconContainer>
-                </PostHeader>
-
-                {editPost === true ? (
-                  <EditInput></EditInput>
-                ) : (
-                  <p className="description">
-                    Muito maneiro esse tutorial de Material UI com React, deem
-                    uma olhada!
-                  </p>
-                )}
-
-                {/* <p className="description">
-                  Muito maneiro esse tutorial de Material UI com React, deem uma
-                  olhada!
-                </p> */}
-
-                <UrlContent
-                  href="https://www.youtube.com/watch?v=xQtC3F8fH6g"
-                  style={{ textDecoration: "none" }}
-                >
-                  <p className="urlTitle">
-                    Como aplicar o Material UI em um projeto React
-                  </p>
-                  <p className="urlDescription">
-                    Hey! I have moved this tutorial to my personal blog. Same
-                    content, new location. Sorry about making you click through
-                    to another page.
-                  </p>
-                  <p className="urlLink">
-                    https://www.youtube.com/watch?v=xQtC3F8fH6g
-                  </p>
-                  <img
-                    src="https://usemobile.com.br/wp-content/uploads/2022/08/react-native-logo-em-cores-claras.png"
-                    alt="image"
-                  ></img>
-                </UrlContent>
-              </div>
-            </Post>
+                  {editPost === true ? (
+                    <EditInput></EditInput>
+                  ) : (
+                    <p className="description">
+                      Muito maneiro esse tutorial de Material UI com React, deem
+                      uma olhada!
+                    </p>
+                  )}
+                  <UrlContent href={i.url} style={{ textDecoration: "none" }}>
+                    <p className="urlTitle">
+                      Como aplicar o Material UI em um projeto React
+                    </p>
+                    <p className="urlDescription">{i.description}</p>
+                    <p className="urlLink">{i.url}</p>
+                    <img src={i.image} alt="image"></img>
+                  </UrlContent>
+                </div>
+              </Post>
+            ))}
           </Posts>
           <Trendings>
             <p className="title">trending</p>
@@ -160,7 +178,6 @@ export default function Timeline() {
           </Trendings>
         </Section>
       </TimelinePosts>
-
       {modalvisible === true ? (
         <DeleteModal
           modalvisible={modalvisible}
@@ -175,7 +192,7 @@ export default function Timeline() {
 
 const Body = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: ${(props) => (props.dataLength ? "max-content" : "100vh")};
   display: flex;
   justify-content: center;
   background-color: #333333;
@@ -278,6 +295,24 @@ const Header = styled.header`
     }
   }
 `;
+const Logout = styled.p`
+  width: 150px;
+  height: 47px;
+  display: ${(props) => (props.showLogout ? "flex" : "none")};
+  align-items: center;
+  justify-content: center;
+  background: #171717;
+  border-bottom-left-radius: 20px;
+  font-family: "Lato";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 20px;
+  color: #ffffff;
+  position: fixed;
+  right: 0;
+  top: 72px;
+`;
 const TimelinePosts = styled.div`
   width: 937px;
   display: flex;
@@ -342,6 +377,19 @@ const Posts = styled.div`
         border: none;
         box-sizing: border-box;
         margin-bottom: 5px;
+        display: flex;
+        position: relative;
+        padding-left: 10px;
+        ::placeholder {
+          position: absolute;
+          top: 5px;
+          font-family: "Lato";
+          font-style: normal;
+          font-weight: 400;
+          font-size: 14px;
+          line-height: 21px;
+          color: #898b90;
+        }
       }
       .inpLink {
         height: 30px;
@@ -385,6 +433,7 @@ const Posts = styled.div`
     }
   }
 `;
+
 const Trendings = styled.aside`
   display: flex;
   flex-direction: column;
