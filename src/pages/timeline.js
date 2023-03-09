@@ -6,7 +6,7 @@ import { AuthContext } from "../contexts/auth.context";
 import DeleteModal from "../components/modal";
 import { useNavigate } from "react-router-dom";
 
-export default function Timeline() {
+export default function Timeline(){
   const navigate = useNavigate();
   const { API_URL, token, name, picture } = useContext(AuthContext);
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function Timeline() {
   const [showLogout, setShowLogout] = useState(false);
   const [modalvisible, setModalvisible] = useState(false);
   const [editPost, setEditPost] = useState(false);
-
+  const [usage, setUsage] = useState(true);
   const URLposts = `${API_URL}/posts`;
   const URLtrendings = `${API_URL}/hashtag`;
 
@@ -34,45 +34,36 @@ export default function Timeline() {
       Authorization: `Bearer ${token}`,
     },
   };
-  // useEffect(() => {
-  //   const promise = axios.get(URLposts, config);
-  //   promise.then((res) => {
-  //     setPosts(res.data);
-  //   });
-  //   //promise.catch((err) => { alert(err.response.data.message) })
-  // }, []);
+    useEffect(() => {
+        const promise = axios.get(URLposts, config)
+        promise.then((res) => {
+            setPosts(res.data);
+        })
+        promise.catch((err) => {
+            console.log(err.response.data.message);
+            alert("An error occured while trying to fetch the posts, please refresh the page");
+        })
+    }, [])
 
-  // useEffect(() => {
-  //   const promise = axios.get(URLtrendings, config);
-  //   promise.then((res) => {
-  //     setHashtags(res.data);
-  //   });
-  //   //promise.catch((err) => { alert(err.response.data.message) })
-  // }, []);
+    useEffect(() => {
+        const promise = axios.get(URLtrendings, config);
+        promise.then((res) => {
+            setHashtags(res.data);
+        })
+        promise.catch((err) => { alert(err.response.data.message) })
+    }, [])
 
-  function publishPost(e) {
-    e.preventdefault();
-    const body = { publishURL, comment };
-    const promise = axios.post(URLposts, body, config);
-    promise.then((res) => {
-      console.log(res.data);
-    });
-    promise.catch((err) => {
-      //alert(err.response.data.message);
-    });
-  }
-
-  function logout() {
-    if (!iconUp) {
-      setChevron("chevron-up");
-      setIconUp(true);
-      setShowLogout(true);
-    } else {
-      setIconUp(false);
-      setChevron("chevron-down");
-      setShowLogout(false);
+    function publishPost(e) {
+        e.preventdefault();
+        const body = { publishURL, comment };
+        const promise = axios.post(URLposts, body, config);
+        promise.then((res) => {
+            console.log(res.data);
+        })
+        promise.catch((err) => {
+            alert(err.response.data.message);
+        })
     }
-  }
 
   function search(e) {
     e.preventdefault();
@@ -86,6 +77,10 @@ export default function Timeline() {
       setLiked("heart");
       setColor("red");
     }
+  }
+
+  function logout(e){
+    e.preventdefault();
   }
 
   return (
@@ -301,22 +296,25 @@ const Header = styled.header`
   }
 `;
 const Logout = styled.p`
-  width: 150px;
-  height: 47px;
-  display: ${(props) => (props.showLogout ? "flex" : "none")};
-  align-items: center;
-  justify-content: center;
-  background: #171717;
-  border-bottom-left-radius: 20px;
-  font-family: "Lato";
-  font-style: normal;
-  font-weight: 700;
-  font-size: 17px;
-  line-height: 20px;
-  color: #ffffff;
-  position: fixed;
-  right: 0;
-  top: 72px;
+    width: 150px;
+    height: 47px;
+    display: ${props => props.showLogout ? "flex" : "none"};
+    align-items: center;
+    justify-content: center;
+    background: #171717;
+    border-bottom-left-radius: 20px;
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 20px;
+    color: #FFFFFF;
+    position: fixed;
+    right: 0;
+    top: 72px;
+    :hover{
+        cursor: pointer;
+    }
 `;
 const TimelinePosts = styled.div`
   width: 937px;
