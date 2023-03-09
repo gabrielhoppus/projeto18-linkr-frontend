@@ -1,8 +1,12 @@
 import styled from "styled-components";
 import { useState } from "react";
 import React from "react";
+import { ReactTagify } from "react-tagify";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
+
+    const navigate = useNavigate()
 
     const imgUser = "https://img1.ak.crunchyroll.com/i/spire3/38bed21ddb85f2ceb0a8986eea3485bd1661224942_large.jpg";
     const [chevron, setChevron] = useState("chevron-down");
@@ -45,17 +49,21 @@ export default function Home() {
             <Timeline>
                 <title>timeline</title>
                 <Section>
-                    <Posts>
-                        <div className="publish">
-                            <img src={imgUser} alt="user"></img>
-                            <form onSubmit={publishPost}>
-                                <h3>What are you going to share today?</h3>
-                                <input className="input inpLink" type="text" placeholder="http://..."></input>
-                                <input className="input inpText" type="text" placeholder="Awesome article about #javascript"></input>
-                                <button type="submit" className="publishButton"><h4>Publish</h4></button>
-                            </form>
-                        </div>
-                    </Posts>
+                    <ReactTagify
+                    colors={"white"}
+                    tagClicked={(tag)=> navigate(`/hashtag/${tag}`)}>
+                        <Posts>
+                            <div className="publish">
+                                <img src={imgUser} alt="user"></img>
+                                <form onSubmit={publishPost}>
+                                    <h3>What are you going to share today?</h3>
+                                    <input className="input inpLink" type="text" placeholder="http://..."></input>
+                                    <input className="input inpText" type="text" placeholder="Awesome article about #javascript"></input>
+                                    <button type="submit" className="publishButton"><h4>Publish</h4></button>
+                                </form>
+                            </div>
+                        </Posts>
+                    </ReactTagify>
                     <Trendings>
                         <p className="title">trending</p>
                         <div className="line"></div>
