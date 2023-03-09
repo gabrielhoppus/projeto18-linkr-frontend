@@ -4,9 +4,15 @@ import React from "react";
 import axios from "axios";
 import { AuthContext } from "../contexts/auth.context";
 import DeleteModal from "../components/modal";
+import { useNavigate } from "react-router-dom";
 
 export default function Timeline() {
+  const navigate = useNavigate();
   const { API_URL, token, name, picture } = useContext(AuthContext);
+  useEffect(() => {
+    if (!token)
+      navigate('/');
+  })
   const [chevron, setChevron] = useState("chevron-down");
   const [iconUp, setIconUp] = useState(false);
   const [liked, setLiked] = useState("heart-outline");
@@ -28,22 +34,21 @@ export default function Timeline() {
       Authorization: `Bearer ${token}`,
     },
   };
+  // useEffect(() => {
+  //   const promise = axios.get(URLposts, config);
+  //   promise.then((res) => {
+  //     setPosts(res.data);
+  //   });
+  //   //promise.catch((err) => { alert(err.response.data.message) })
+  // }, []);
 
-  useEffect(() => {
-    const promise = axios.get(URLposts, config);
-    promise.then((res) => {
-      setPosts(res.data);
-    });
-    //promise.catch((err) => { alert(err.response.data.message) })
-  }, []);
-
-  useEffect(() => {
-    const promise = axios.get(URLtrendings, config);
-    promise.then((res) => {
-      setHashtags(res.data);
-    });
-    //promise.catch((err) => { alert(err.response.data.message) })
-  }, []);
+  // useEffect(() => {
+  //   const promise = axios.get(URLtrendings, config);
+  //   promise.then((res) => {
+  //     setHashtags(res.data);
+  //   });
+  //   //promise.catch((err) => { alert(err.response.data.message) })
+  // }, []);
 
   function publishPost(e) {
     e.preventdefault();

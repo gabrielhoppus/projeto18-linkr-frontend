@@ -5,6 +5,7 @@ import swal from "sweetalert";
 import { AuthContext } from "../contexts/auth.context";
 import { ThreeDots } from "react-loader-spinner";
 import axios from "axios";
+import jwt from 'jwt-decode';
 
 export default function SignIn() {
     const { API_URL, setToken, setName, setPicture } = useContext(AuthContext);
@@ -29,16 +30,22 @@ export default function SignIn() {
                 setClicked(true);
                 const response =
                     await axios.post(`${API_URL}/sign-in`, form);
-                setToken(response.data.token);
-                setName(response.data.username);
-                setPicture(response.data.profilePicture);
-                navigate('/timeline');
+                const decoded = jwt(response.data.token);
+                if (decoded) {
+                    setToken(response.data.token);
+                    localStorage.setItem("token", response.data.token);
+                    setName(decoded.username);
+                    setPicture(decoded.picture);
+                    navigate('/timeline');
+                }
+
             } catch (error) {
                 setClicked(false);
                 console.log(error.response.data);
                 swal({
                     title: "Erro!",
-                    text: (error.response.data),
+                    text: (error.response.data[0] ?
+                        error.response.data[0] : error.response.data.message),
                     icon: "error"
                 });
             }

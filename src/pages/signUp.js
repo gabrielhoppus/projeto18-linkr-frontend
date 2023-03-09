@@ -41,7 +41,8 @@ export default function SignUp() {
                 console.log(error.response);
                 swal({
                     title: "Erro!",
-                    text: error.response.data,
+                    text: (error.response.data[0] ?
+                        error.response.data[0] : error.response.data.message),
                     icon: "error"
                 });
             }
