@@ -7,7 +7,7 @@ import { ThreeDots } from "react-loader-spinner";
 import axios from "axios";
 
 export default function SignIn() {
-    const { API_URL, setToken } = useContext(AuthContext);
+    const { API_URL, setToken, setName, setPicture } = useContext(AuthContext);
     const navigate = useNavigate();
     const [form, setForm] = useState({
         email: '',
@@ -30,6 +30,8 @@ export default function SignIn() {
                 const response =
                     await axios.post(`${API_URL}/sign-in`, form);
                 setToken(response.data.token);
+                setName(response.data.username);
+                setPicture(response.data.profilePicture);
                 navigate('/timeline');
             } catch (error) {
                 setClicked(false);
