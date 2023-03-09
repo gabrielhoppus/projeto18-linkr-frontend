@@ -17,6 +17,7 @@ export default function Timeline() {
     const [publishURL, setPubrishURL] = useState("");
     const [comment, setComment] = useState("");
     const [showLogout, setShowLogout] = useState(false);
+    const [usage, setUsage] = useState(true);
 
     const URLposts = `${API_URL}/posts`;
     const URLtrendings = `${API_URL}/hashtag`;
@@ -32,26 +33,29 @@ export default function Timeline() {
         promise.then((res) => {
             setPosts(res.data);
         })
-        //promise.catch((err) => { alert(err.response.data.message) })
+        promise.catch((err) => {
+            console.log(err.response.data.message);
+            alert("An error occured while trying to fetch the posts, please refresh the page");
+        })
     }, [])
 
     useEffect(() => {
-        const promise = axios.get(URLtrendings, config)
+        const promise = axios.get(URLtrendings, config);
         promise.then((res) => {
             setHashtags(res.data);
         })
-        //promise.catch((err) => { alert(err.response.data.message) })
+        promise.catch((err) => { alert(err.response.data.message) })
     }, [])
 
     function publishPost(e) {
         e.preventdefault();
-        const body = { publishURL, comment};
+        const body = { publishURL, comment };
         const promise = axios.post(URLposts, body, config);
         promise.then((res) => {
             console.log(res.data);
         })
         promise.catch((err) => {
-            //alert(err.response.data.message);
+            alert(err.response.data.message);
         })
     }
 
@@ -70,7 +74,7 @@ export default function Timeline() {
     function search(e) {
         e.preventdefault();
     }
-    
+
     function likePost() {
         if (liked === "heart") {
             setLiked("heart-outline");
@@ -96,7 +100,7 @@ export default function Timeline() {
             </Header>
             <Logout showLogout={showLogout}>
                 Logout
-                </Logout>
+            </Logout>
             <TimelinePosts>
                 <title>timeline</title>
                 <Section>
@@ -277,6 +281,9 @@ const Logout = styled.p`
     position: fixed;
     right: 0;
     top: 72px;
+    :hover{
+        cursor: pointer;
+    }
 `;
 const TimelinePosts = styled.div`
     width: 937px;
