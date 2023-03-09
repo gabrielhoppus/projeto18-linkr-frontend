@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import swal from "sweetalert";
 import { AuthContext } from "../contexts/auth.context";
 import { ThreeDots } from "react-loader-spinner";
@@ -10,6 +10,10 @@ import jwt from 'jwt-decode';
 export default function SignIn() {
     const { API_URL, setToken, setName, setPicture } = useContext(AuthContext);
     const navigate = useNavigate();
+    useEffect(() => {
+        if (token)
+            navigate('/timeline');
+    })
     const [form, setForm] = useState({
         email: '',
         password: ''
