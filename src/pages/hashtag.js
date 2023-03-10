@@ -4,26 +4,15 @@ import React from "react";
 import axios from "axios";
 import { AuthContext } from "../contexts/auth.context";
 import DeleteModal from "../components/modal";
-import { useNavigate } from "react-router-dom";
-
-import swal from "sweetalert";
-
+import { useNavigate, useParams } from "react-router-dom";
 import { ReactTagify } from "react-tagify";
 
-
-export default function Timeline(){
+export default function HashtagPage(){
   const navigate = useNavigate();
   const { API_URL, token, name, picture } = useContext(AuthContext);
   useEffect(() => {
-    if (!token) {
-      swal({
-        title: "Não autorizado",
-        text: "Não foi possível realizar a autenticação",
-        icon: "error"
-      })
+    if (!token)
       navigate('/');
-    }
-
   })
   const [chevron, setChevron] = useState("chevron-down");
   const [iconUp, setIconUp] = useState(false);
@@ -41,6 +30,7 @@ export default function Timeline(){
   const URLposts = `${API_URL}/posts`;
   const URLtrendings = `${API_URL}/hashtag`;
 
+  const { hashtagName } = useParams()
 
   const tagStyle = {
     color: 'white',
@@ -53,9 +43,8 @@ export default function Timeline(){
       Authorization: `Bearer ${token}`,
     },
   };
-
     useEffect(() => {
-        const promise = axios.get(URLposts, config)
+        const promise = axios.get(`${URLtrendings}/${hashtagName}`, config)
         promise.then((res) => {
             setPosts(res.data);
         })
@@ -73,44 +62,6 @@ export default function Timeline(){
         promise.catch((err) => { alert(err.response.data.message) })
     }, [])
 
-    function publishPost(e) {
-        e.preventdefault();
-        
-        const body = { publishURL, comment };
-        const promise = axios.post(URLposts, body, config);
-        promise.then((res) => {
-            console.log(res.data);
-        })
-        promise.catch((err) => {
-            alert(err.response.data.message);
-        })
-
-        postHashTag()
-    }
-
-    function postHashTag(e) {
-      e.preventdefault();
-      
-      let commentArray = comment.split(" ")
-
-      let commentFiltered = commentArray.filter(el=> el[0] === "#")
-
-      if(commentFiltered.length > 0) {
-        commentFiltered.forEach(el=>{
-          el.replace("#","")
-          const body = {name:el}
-          const promise = axios.post(URLposts, body, config);
-          promise.then((res) => {
-              console.log(res.data);
-          })
-          promise.catch((err) => {
-              alert(err.response.data.message);
-          })
-        })
-    }
-
-     
-  }
 
   function search(e) {
     e.preventdefault();
@@ -147,38 +98,13 @@ export default function Timeline(){
       </Header>
       <Logout showLogout={showLogout}>Logout</Logout>
       <TimelinePosts>
-        <title>timeline</title>
+        <title>{`#${hashtagName}`}</title>
         <Section>
-          <Posts>
-            <div className="publish">
-              <img src={picture} alt="user"></img>
-              <form onSubmit={publishPost}>
-                <h3>What are you going to share today?</h3>
-                <input
-                  className="input inpLink"
-                  type="text"
-                  placeholder="http://..."
-                  onChange={(e) => setPubrishURL(e.target.value)}
-                  required
-                ></input>
-                <input
-                  className="input inpText"
-                  type="text"
-                  placeholder="Awesome article about #javascript"
-                  onChange={(e) => setComment(e.target.value)}
-                ></input>
-                <button type="submit" className="publishButton">
-                  <h4>Publish</h4>
-                </button>
-              </form>
-            </div>
-            {posts.map((i) => (
-              <ReactTagify 
+        <ReactTagify 
               tagStyle={tagStyle}
-              tagClicked={(tag)=> {
-                tag.replace("#","")
-                navigate(`/hashtag/${tag}`)
-              }}>
+              >
+          <Posts>
+            {posts.map((i) => (
               <Post key={i.id}>
                 <div className="userPost">
                   <img src={picture} alt="user"></img>
@@ -218,9 +144,9 @@ export default function Timeline(){
                   </UrlContent>
                 </div>
               </Post>
-              </ReactTagify>
             ))}
           </Posts>
+          </ReactTagify>
           <Trendings>
             <p className="title">trending</p>
             <div className="line"></div>
