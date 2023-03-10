@@ -63,6 +63,7 @@ export default function SignUp() {
             </Linkr>
             <Form onSubmit={handleSubmit}>
                 <input
+                    data-test="email"
                     name="email"
                     type="email"
                     value={form.email}
@@ -70,6 +71,7 @@ export default function SignUp() {
                     placeholder="e-mail"
                 />
                 <input
+                    data-test="password"
                     name='password'
                     type="password"
                     value={form.password}
@@ -77,6 +79,7 @@ export default function SignUp() {
                     placeholder="password"
                 />
                 <input
+                    data-test="username"
                     name='username'
                     type='text'
                     value={form.name}
@@ -84,13 +87,17 @@ export default function SignUp() {
                     placeholder="username"
                 />
                 <input
+                    data-test="picture-url"
                     name='picture'
                     type='url'
                     value={form.picture}
                     onChange={handleForm}
                     placeholder="picture url"
                 />
-                <button type="submit" disabled={clicked}>
+                <button
+                    data-test="sign-up-btn"
+                    type="submit"
+                    disabled={clicked}>
                     {clicked ? <ThreeDots
                         color="#183bad"
                         wrapperStyle={{
@@ -98,7 +105,9 @@ export default function SignUp() {
                             justifyContent: 'center',
                             alignItems: 'center'
                     }}/> : 'Sign Up'}</button>
-                <Link to={'/'}>Switch back to log in</Link>
+                <Link
+                    data-test="login-link"
+                    to={'/'}>Switch back to log in</Link>
             </Form>
         </Wrapper>
     )

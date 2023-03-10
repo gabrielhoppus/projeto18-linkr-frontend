@@ -18,92 +18,98 @@ export default function SignIn() {
             navigate('/timeline');
     });
 
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
+    const [form, setForm] = useState({
+        email: "",
+        password: "",
+    });
 
-  const [clicked, setClicked] = useState(false);
+    const [clicked, setClicked] = useState(false);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    const { password, email } = form;
-    if (!email || !password)
-      swal({
-        title: "Erro",
-        text: "Por favor, preencha todos os campos",
-        icon: "error",
-      });
-    else {
-      try {
-        setClicked(true);
-        const response = await axios.post(`${API_URL}/sign-in`, form);
-        const decoded = jwt(response.data.token);
-        if (decoded) {
-          setToken(response.data.token);
-          localStorage.setItem("token", response.data.token);
-          setName(decoded.username);
-          setPicture(decoded.picture);
-          navigate("/timeline");
+    async function handleSubmit(e) {
+        e.preventDefault();
+        const { password, email } = form;
+        if (!email || !password)
+            swal({
+                title: "Erro",
+                text: "Por favor, preencha todos os campos",
+                icon: "error",
+            });
+        else {
+            try {
+                setClicked(true);
+                const response = await axios.post(`${API_URL}/sign-in`, form);
+                const decoded = jwt(response.data.token);
+                if (decoded) {
+                    setToken(response.data.token);
+                    localStorage.setItem("token", response.data.token);
+                    setName(decoded.username);
+                    setPicture(decoded.picture);
+                    navigate("/timeline");
+                }
+            } catch (error) {
+                setClicked(false);
+                console.log(error.response.data);
+                swal({
+                    title: "Erro!",
+                    text: error.response.data[0]
+                        ? error.response.data[0]
+                        : error.response.data.message,
+                    icon: "error",
+                });
+            }
         }
-      } catch (error) {
-        setClicked(false);
-        console.log(error.response.data);
-        swal({
-          title: "Erro!",
-          text: error.response.data[0]
-            ? error.response.data[0]
-            : error.response.data.message,
-          icon: "error",
-        });
-      }
     }
-  }
 
-  function handleForm(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  }
-  return (
-    <Wrapper>
-      <Linkr>
-        <div>
-          <h1>linkr</h1>
-          <p>Save, share and discover the best links on the web</p>
-        </div>
-      </Linkr>
-      <Form onSubmit={handleSubmit}>
-        <input
-          name="email"
-          type="email"
-          value={form.email}
-          onChange={handleForm}
-          placeholder="e-mail"
-        />
-        <input
-          name="password"
-          type="password"
-          value={form.password}
-          onChange={handleForm}
-          placeholder="password"
-        />
-        <button type="submit" disabled={clicked}>
-          {clicked ? (
-            <ThreeDots
-              color="#183bad"
-              wrapperStyle={{
-                display: clicked ? "flex" : "none",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            />
-          ) : (
-            "Login"
-          )}
-        </button>
-        <Link to={"/sign-up"}>First time? Create an account</Link>
-      </Form>
-    </Wrapper>
-  );
+    function handleForm(e) {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    }
+    return (
+        <Wrapper>
+            <Linkr>
+                <div>
+                    <h1>linkr</h1>
+                    <p>Save, share and discover the best links on the web</p>
+                </div>
+            </Linkr>
+            <Form onSubmit={handleSubmit}>
+                <input
+                    data-test="email"
+                    name="email"
+                    type="email"
+                    value={form.email}
+                    onChange={handleForm}
+                    placeholder="e-mail"
+                />
+                <input
+                    data-test="password"
+                    name="password"
+                    type="password"
+                    value={form.password}
+                    onChange={handleForm}
+                    placeholder="password"
+                />
+                <button
+                    data-test="login-btn"
+                    type="submit"
+                    disabled={clicked}>
+                    {clicked ? (
+                        <ThreeDots
+                            color="#183bad"
+                            wrapperStyle={{
+                                display: clicked ? "flex" : "none",
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}
+                        />
+                    ) : (
+                        "Login"
+                    )}
+                </button>
+                <Link data-test="sign-up-link"
+                    to={"/sign-up"}>First time? Create an account</Link>
+            </Form>
+        </Wrapper>
+    );
 }
 
 const Wrapper = styled.div`
