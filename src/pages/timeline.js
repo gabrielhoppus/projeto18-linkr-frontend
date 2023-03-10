@@ -4,7 +4,7 @@ import React from "react";
 import axios from "axios";
 import { AuthContext } from "../contexts/auth.context";
 import DeleteModal from "../components/modal";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 import swal from "sweetalert";
 
@@ -13,7 +13,8 @@ import { ReactTagify } from "react-tagify";
 
 export default function Timeline(){
   const navigate = useNavigate();
-  const { API_URL, token, name, picture } = useContext(AuthContext);
+  const { API_URL, name, picture } = useContext(AuthContext);
+  const token = localStorage.getItem("token")
   useEffect(() => {
     if (!token) {
       swal({
@@ -65,13 +66,13 @@ export default function Timeline(){
         })
     }, [])
 
-    useEffect(() => {
-        const promise = axios.get(URLtrendings, config);
-        promise.then((res) => {
-            setHashtags(res.data);
-        })
-        promise.catch((err) => { alert(err.response.data.message) })
-    }, [])
+  // useEffect(() => {
+  //     const promise = axios.get(URLtrendings, config);
+  //     promise.then((res) => {
+  //         setHashtags(res.data);
+  //     })
+  //     promise.catch((err) => { alert(err.response.data.message) })
+  // }, [])
 
     function publishPost(e) {
         e.preventdefault();
@@ -126,7 +127,7 @@ export default function Timeline(){
     }
   }
 
-  function logout(e){
+  function logout(e) {
     e.preventdefault();
   }
 
@@ -190,7 +191,9 @@ export default function Timeline(){
                   <p className="likes">{`${likes} likes`}</p>
                 </div>
                 <div className="dataPost">
-                  <h4 className="userName">{name}</h4>
+                  <Link to={`/user/${i.id}`}>
+                    <h4 className="userName">{name}</h4>
+                  </Link>
                   <IconContainer>
                     {" "}
                     <Editicon onClick={() => setEditPost(!editPost)}>
@@ -204,8 +207,7 @@ export default function Timeline(){
                     <EditInput></EditInput>
                   ) : (
                     <p className="description">
-                      Muito maneiro esse tutorial de Material UI com React, deem
-                      uma olhada!
+                      {i.comment}
                     </p>
                   )}
                   <UrlContent href={i.url} style={{ textDecoration: "none" }}>
