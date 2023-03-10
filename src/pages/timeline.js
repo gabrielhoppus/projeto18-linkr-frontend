@@ -10,22 +10,21 @@ import swal from "sweetalert";
 
 import { ReactTagify } from "react-tagify";
 
-
 export default function Timeline() {
   const navigate = useNavigate();
   const { API_URL, name, picture, setName } = useContext(AuthContext);
-  const token = localStorage.getItem("token")
+  const token = localStorage.getItem("token");
+  
   useEffect(() => {
     if (!token) {
       swal({
         title: "Não autorizado",
         text: "Não foi possível realizar a autenticação",
-        icon: "error"
-      })
-      navigate('/');
+        icon: "error",
+      });
+      navigate("/");
     }
-
-  })
+  });
   const [chevron, setChevron] = useState("chevron-down");
   const [iconUp, setIconUp] = useState(false);
   const [liked, setLiked] = useState("heart-outline");
@@ -41,12 +40,11 @@ export default function Timeline() {
   const [usage, setUsage] = useState(true);
   const URLposts = `${API_URL}/posts`;
   const URLtrendings = `${API_URL}/hashtag`;
-
-
+  const [postData, setPostData] = useState("");
   const tagStyle = {
-    color: 'white',
+    color: "white",
     fontWeight: 700,
-    cursor: 'pointer'
+    cursor: "pointer",
   };
 
   const config = {
@@ -55,15 +53,17 @@ export default function Timeline() {
     },
   };
 
+
   useEffect(() => {
     getPosts()
 
   }, [])
   function getPosts() {
     const promise = axios.get(URLposts, config)
+
     promise.then((res) => {
       setPosts(res.data);
-    })
+    });
     promise.catch((err) => {
       console.log(err.message);
       alert("An error occured while trying to fetch the posts, please refresh the page");
@@ -81,7 +81,8 @@ export default function Timeline() {
   function publishPost(e) {
     e.preventDefault();
     const body = { url, comment };
-    axios.post(URLposts, body, config)
+    axios
+      .post(URLposts, body, config)
       .then(() => {
         alert("Post criado com sucesso");
         setPublishURL("");
@@ -132,10 +133,27 @@ export default function Timeline() {
   function logout(e) {
     e.preventdefault();
   }
+
   function handleTagClick(tag) {
     tag = tag.replace("#", "");
     navigate(`/hashtag/${ tag }`);
+    }
+
+
+
+  function deletePost(post_id) {
+    axios
+      .post(`${URLposts}/${post_id}`, config)
+      .then(() => {
+        alert("Post deletado com sucesso");
+        setModalvisible(!modalvisible);
+        getPosts();
+      })
+      .catch((err) => {
+        alert(err.response.data.message);
+      });
   }
+  
   return (
     <Body dataLength={posts.length > 2}>
       <Header>
@@ -182,6 +200,7 @@ export default function Timeline() {
               </form>
             </div>
             {posts.length ?
+
 
               posts.map((i) => (
                   <Post key={i.id}>
@@ -249,6 +268,8 @@ export default function Timeline() {
         <DeleteModal
           modalvisible={modalvisible}
           setModalvisible={setModalvisible}
+          deletePost={deletePost}
+          postData={postData}
         />
       ) : (
         ""
@@ -258,7 +279,11 @@ export default function Timeline() {
 }
 
 const StyledLink = styled(Link)`
-  &:focus, &:hover, &:visited, &:link, &:active {
+  &:focus,
+  &:hover,
+  &:visited,
+  &:link,
+  &:active {
     text-decoration: none;
   }
 `;
@@ -369,25 +394,25 @@ const Header = styled.header`
   }
 `;
 const Logout = styled.p`
-    width: 150px;
-    height: 47px;
-    display: ${props => props.showLogout ? "flex" : "none"};
-    align-items: center;
-    justify-content: center;
-    background: #171717;
-    border-bottom-left-radius: 20px;
-    font-family: 'Lato';
-    font-style: normal;
-    font-weight: 700;
-    font-size: 17px;
-    line-height: 20px;
-    color: #FFFFFF;
-    position: fixed;
-    right: 0;
-    top: 72px;
-    :hover{
-        cursor: pointer;
-    }
+  width: 150px;
+  height: 47px;
+  display: ${(props) => (props.showLogout ? "flex" : "none")};
+  align-items: center;
+  justify-content: center;
+  background: #171717;
+  border-bottom-left-radius: 20px;
+  font-family: "Lato";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 20px;
+  color: #ffffff;
+  position: fixed;
+  right: 0;
+  top: 72px;
+  :hover {
+    cursor: pointer;
+  }
 `;
 const TimelinePosts = styled.div`
   width: 937px;
@@ -686,4 +711,9 @@ const EditInput = styled.input`
   font-family: "Lato";
   font-size: 18px;
   padding-left: 7px;
+`;
+const NaviIcon = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 `;
