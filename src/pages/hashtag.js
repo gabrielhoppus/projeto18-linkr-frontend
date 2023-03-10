@@ -5,6 +5,7 @@ import axios from "axios";
 import { AuthContext } from "../contexts/auth.context";
 import DeleteModal from "../components/modal";
 import { useNavigate, useParams } from "react-router-dom";
+import { ReactTagify } from "react-tagify";
 
 export default function HashtagPage(){
   const navigate = useNavigate();
