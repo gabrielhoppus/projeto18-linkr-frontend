@@ -9,12 +9,11 @@ import jwt from 'jwt-decode';
 import { Header } from "../components/Header";
 
 export default function SignIn() {
-    const { API_URL, setToken, setName, setPicture, token, setLogged } = useContext(AuthContext);
+    const { API_URL, setToken, setName, setPicture, token } = useContext(AuthContext);
     const navigate = useNavigate();
 
     useEffect(() => {
         if (token)
-            setLogged(true)
             navigate('/timeline');
     });
 

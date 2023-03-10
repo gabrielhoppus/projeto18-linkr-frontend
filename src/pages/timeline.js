@@ -13,7 +13,7 @@ import { ReactTagify } from "react-tagify";
 
 export default function Timeline() {
   const navigate = useNavigate();
-  const { API_URL, name, picture } = useContext(AuthContext);
+  const { API_URL, name, picture, setName } = useContext(AuthContext);
   const token = localStorage.getItem("token")
   useEffect(() => {
     if (!token) {
@@ -57,15 +57,15 @@ export default function Timeline() {
 
   useEffect(() => {    
     getPosts()
+    
   }, [])
-
   function getPosts(){
     const promise = axios.get(URLposts, config)
     promise.then((res) => {
       setPosts(res.data);
     })
     promise.catch((err) => {
-      console.log(err.response.data.message);
+      console.log(err.message);
       alert("An error occured while trying to fetch the posts, please refresh the page");
     })
   }
@@ -80,7 +80,6 @@ export default function Timeline() {
 
   function publishPost(e) {
     e.preventDefault();
-    console.log("função")
     const body = { url, comment };
     axios.post(URLposts, body, config)
       .then(() => {
@@ -135,7 +134,6 @@ export default function Timeline() {
   function logout(e) {
     e.preventdefault();
   }
-
   return (
     <Body dataLength={posts.length > 2}>
       <Header>
@@ -181,7 +179,9 @@ export default function Timeline() {
                 </button>
               </form>
             </div>
-            {posts.map((i) => (
+            {posts.length ? 
+
+            posts.map((i) => (
               /*<ReactTagify 
               tagStyle={tagStyle}
               tagClicked={(tag)=> {
@@ -199,7 +199,7 @@ export default function Timeline() {
                   <p className="likes">{`${likes} likes`}</p>
                 </div>
                 <div className="dataPost">
-                  <StyledLink to={`/user/${i.id}`}>
+                  <StyledLink to={`/user/${i.id}`} onClick={() => setName(i.username)}>
                     <h4 className="userName">{name}</h4>
                   </StyledLink>
                   <IconContainer>
@@ -227,9 +227,13 @@ export default function Timeline() {
                     <img src={i.image} alt="image"></img>
                   </UrlContent>
                 </div>
-              </Post>
+              </Post>))
               //</Posts></ReactTagify>
-            ))}
+              
+            :  <></>
+            //
+          }
+
           </Posts>
           <Trendings>
             <p className="title">trending</p>
