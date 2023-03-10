@@ -9,13 +9,14 @@ import jwt from "jwt-decode";
 import { Header } from "../components/Header";
 
 export default function SignIn() {
-  const { API_URL, setToken, setName, setPicture, token } =
-    useContext(AuthContext);
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (token) navigate("/timeline");
-  });
+    const { API_URL, setToken, setName, setPicture, token } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (token)
+            navigate('/timeline');
+    });
 
   const [form, setForm] = useState({
     email: "",

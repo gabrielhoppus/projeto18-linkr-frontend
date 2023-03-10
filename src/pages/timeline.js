@@ -12,8 +12,9 @@ import { ReactTagify } from "react-tagify";
 
 export default function Timeline() {
   const navigate = useNavigate();
-  const { API_URL, name, picture } = useContext(AuthContext);
+  const { API_URL, name, picture, setName } = useContext(AuthContext);
   const token = localStorage.getItem("token");
+  
   useEffect(() => {
     if (!token) {
       swal({
@@ -52,6 +53,7 @@ export default function Timeline() {
     },
   };
 
+
   useEffect(() => {
     getPosts();
   }, []);
@@ -62,11 +64,9 @@ export default function Timeline() {
       setPosts(res.data);
     });
     promise.catch((err) => {
-      console.log(err.response.data.message);
-      alert(
-        "An error occured while trying to fetch the posts, please refresh the page"
-      );
-    });
+      console.log(err.message);
+      alert("An error occured while trying to fetch the posts, please refresh the page");
+    })
   }
 
   // useEffect(() => {
@@ -79,7 +79,6 @@ export default function Timeline() {
 
   function publishPost(e) {
     e.preventDefault();
-    console.log("função");
     const body = { url, comment };
     axios
       .post(URLposts, body, config)
@@ -136,6 +135,7 @@ export default function Timeline() {
     e.preventdefault();
   }
 
+
   function deletePost(post_id) {
     axios
       .post(`${URLposts}/${post_id}`, config)
@@ -148,7 +148,6 @@ export default function Timeline() {
         alert(err.response.data.message);
       });
   }
-
   return (
     <Body dataLength={posts.length > 2}>
       <Header>
@@ -194,7 +193,9 @@ export default function Timeline() {
                 </button>
               </form>
             </div>
-            {posts.map((i) => (
+            {posts.length ? 
+
+            posts.map((i) => (
               /*<ReactTagify 
               tagStyle={tagStyle}
               tagClicked={(tag)=> {
@@ -212,6 +213,7 @@ export default function Timeline() {
                   <p className="likes">{`${likes} likes`}</p>
                 </div>
                 <div className="dataPost">
+
                   <NaviIcon>
                     <StyledLink to={`/user/${i.id}`}>
                       <h4 className="userName">{name}</h4>
@@ -232,6 +234,7 @@ export default function Timeline() {
                       </TrashIcon>
                     </IconContainer>
                   </NaviIcon>
+
                   {editPost === true ? (
                     <EditInput></EditInput>
                   ) : (
@@ -246,9 +249,13 @@ export default function Timeline() {
                     <img src={i.image} alt="image"></img>
                   </UrlContent>
                 </div>
-              </Post>
+              </Post>))
               //</Posts></ReactTagify>
-            ))}
+              
+            :  <></>
+            //
+          }
+
           </Posts>
           <Trendings>
             <p className="title">trending</p>
