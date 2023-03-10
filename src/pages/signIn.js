@@ -6,19 +6,23 @@ import { AuthContext } from "../contexts/auth.context";
 import { ThreeDots } from "react-loader-spinner";
 import axios from "axios";
 import jwt from 'jwt-decode';
+import { Header } from "../components/Header";
 
 export default function SignIn() {
     const { API_URL, setToken, setName, setPicture, token, setLogged } = useContext(AuthContext);
     const navigate = useNavigate();
+
     useEffect(() => {
         if (token)
             setLogged(true)
             navigate('/timeline');
-    })
+    });
+
     const [form, setForm] = useState({
         email: '',
         password: ''
     });
+
     const [clicked, setClicked] = useState(false);
 
     async function handleSubmit(e) {
