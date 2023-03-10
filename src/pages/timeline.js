@@ -5,14 +5,25 @@ import axios from "axios";
 import { AuthContext } from "../contexts/auth.context";
 import DeleteModal from "../components/modal";
 import { useNavigate } from "react-router-dom";
+
+import swal from "sweetalert";
+
 import { ReactTagify } from "react-tagify";
+
 
 export default function Timeline(){
   const navigate = useNavigate();
   const { API_URL, token, name, picture } = useContext(AuthContext);
   useEffect(() => {
-    if (!token)
+    if (!token) {
+      swal({
+        title: "Não autorizado",
+        text: "Não foi possível realizar a autenticação",
+        icon: "error"
+      })
       navigate('/');
+    }
+
   })
   const [chevron, setChevron] = useState("chevron-down");
   const [iconUp, setIconUp] = useState(false);
