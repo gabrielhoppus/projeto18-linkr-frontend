@@ -2,8 +2,12 @@ import React from "react";
 import styled from "styled-components";
 import close from "../assets/images/closeIcon.svg";
 
-export default function DeleteModal({ modalvisible, setModalvisible }) {
-  function deletePost() {}
+export default function DeleteModal({
+  modalvisible,
+  setModalvisible,
+  deletePost,
+  postData,
+}) {
   return (
     <>
       <Modal>
@@ -21,7 +25,7 @@ export default function DeleteModal({ modalvisible, setModalvisible }) {
               Não
             </Modalbtn>
 
-            <Modalbtn color={"crimson"} onClick={deletePost}>
+            <Modalbtn color={"crimson"} onClick={() => deletePost(postData)}>
               Excluir
             </Modalbtn>
           </div>

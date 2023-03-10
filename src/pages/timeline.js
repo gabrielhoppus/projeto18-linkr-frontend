@@ -10,22 +10,20 @@ import swal from "sweetalert";
 
 import { ReactTagify } from "react-tagify";
 
-
 export default function Timeline() {
   const navigate = useNavigate();
   const { API_URL, name, picture } = useContext(AuthContext);
-  const token = localStorage.getItem("token")
+  const token = localStorage.getItem("token");
   useEffect(() => {
     if (!token) {
       swal({
         title: "Não autorizado",
         text: "Não foi possível realizar a autenticação",
-        icon: "error"
-      })
-      navigate('/');
+        icon: "error",
+      });
+      navigate("/");
     }
-
-  })
+  });
   const [chevron, setChevron] = useState("chevron-down");
   const [iconUp, setIconUp] = useState(false);
   const [liked, setLiked] = useState("heart-outline");
@@ -41,12 +39,11 @@ export default function Timeline() {
   const [usage, setUsage] = useState(true);
   const URLposts = `${API_URL}/posts`;
   const URLtrendings = `${API_URL}/hashtag`;
-
-
+  const [postData, setPostData] = useState("");
   const tagStyle = {
-    color: 'white',
+    color: "white",
     fontWeight: 700,
-    cursor: 'pointer'
+    cursor: "pointer",
   };
 
   const config = {
@@ -55,19 +52,21 @@ export default function Timeline() {
     },
   };
 
-  useEffect(() => {    
-    getPosts()
-  }, [])
+  useEffect(() => {
+    getPosts();
+  }, []);
 
-  function getPosts(){
-    const promise = axios.get(URLposts, config)
+  function getPosts() {
+    const promise = axios.get(URLposts, config);
     promise.then((res) => {
       setPosts(res.data);
-    })
+    });
     promise.catch((err) => {
       console.log(err.response.data.message);
-      alert("An error occured while trying to fetch the posts, please refresh the page");
-    })
+      alert(
+        "An error occured while trying to fetch the posts, please refresh the page"
+      );
+    });
   }
 
   // useEffect(() => {
@@ -80,18 +79,19 @@ export default function Timeline() {
 
   function publishPost(e) {
     e.preventDefault();
-    console.log("função")
+    console.log("função");
     const body = { url, comment };
-    axios.post(URLposts, body, config)
+    axios
+      .post(URLposts, body, config)
       .then(() => {
-      alert("Post criado com sucesso");
-      setPublishURL("");
-      setComment("");
-      getPosts();
-    })
+        alert("Post criado com sucesso");
+        setPublishURL("");
+        setComment("");
+        getPosts();
+      })
       .catch((err) => {
         alert(err.response.data.message);
-      })
+      });
 
     // postHashTag()
   }
@@ -134,6 +134,19 @@ export default function Timeline() {
 
   function logout(e) {
     e.preventdefault();
+  }
+
+  function deletePost(post_id) {
+    axios
+      .post(`${URLposts}/${post_id}`, config)
+      .then(() => {
+        alert("Post deletado com sucesso");
+        setModalvisible(!modalvisible);
+        getPosts();
+      })
+      .catch((err) => {
+        alert(err.response.data.message);
+      });
   }
 
   return (
@@ -199,24 +212,30 @@ export default function Timeline() {
                   <p className="likes">{`${likes} likes`}</p>
                 </div>
                 <div className="dataPost">
-                  <StyledLink to={`/user/${i.id}`}>
-                    <h4 className="userName">{name}</h4>
-                  </StyledLink>
-                  <IconContainer>
-                    {" "}
-                    <Editicon onClick={() => setEditPost(!editPost)}>
-                      <ion-icon name="create-outline"></ion-icon>
-                    </Editicon>
-                    <TrashIcon onClick={() => setModalvisible(!modalvisible)}>
-                      <ion-icon name="trash-outline"></ion-icon>
-                    </TrashIcon>
-                  </IconContainer>
+                  <NaviIcon>
+                    <StyledLink to={`/user/${i.id}`}>
+                      <h4 className="userName">{name}</h4>
+                    </StyledLink>
+                    <IconContainer>
+                      {" "}
+                      <Editicon onClick={() => setEditPost(!editPost)}>
+                        <ion-icon name="create-outline"></ion-icon>
+                      </Editicon>
+                      <TrashIcon
+                        onClick={() => {
+                          setPostData(i.id);
+                          console.log("i: ", i, "state: ", postData);
+                          setModalvisible(!modalvisible);
+                        }}
+                      >
+                        <ion-icon name="trash-outline"></ion-icon>
+                      </TrashIcon>
+                    </IconContainer>
+                  </NaviIcon>
                   {editPost === true ? (
                     <EditInput></EditInput>
                   ) : (
-                    <p className="description">
-                      {i.comment}
-                    </p>
+                    <p className="description">{i.comment}</p>
                   )}
                   <UrlContent href={i.url} style={{ textDecoration: "none" }}>
                     <p className="urlTitle">
@@ -246,6 +265,8 @@ export default function Timeline() {
         <DeleteModal
           modalvisible={modalvisible}
           setModalvisible={setModalvisible}
+          deletePost={deletePost}
+          postData={postData}
         />
       ) : (
         ""
@@ -255,7 +276,11 @@ export default function Timeline() {
 }
 
 const StyledLink = styled(Link)`
-  &:focus, &:hover, &:visited, &:link, &:active {
+  &:focus,
+  &:hover,
+  &:visited,
+  &:link,
+  &:active {
     text-decoration: none;
   }
 `;
@@ -366,25 +391,25 @@ const Header = styled.header`
   }
 `;
 const Logout = styled.p`
-    width: 150px;
-    height: 47px;
-    display: ${props => props.showLogout ? "flex" : "none"};
-    align-items: center;
-    justify-content: center;
-    background: #171717;
-    border-bottom-left-radius: 20px;
-    font-family: 'Lato';
-    font-style: normal;
-    font-weight: 700;
-    font-size: 17px;
-    line-height: 20px;
-    color: #FFFFFF;
-    position: fixed;
-    right: 0;
-    top: 72px;
-    :hover{
-        cursor: pointer;
-    }
+  width: 150px;
+  height: 47px;
+  display: ${(props) => (props.showLogout ? "flex" : "none")};
+  align-items: center;
+  justify-content: center;
+  background: #171717;
+  border-bottom-left-radius: 20px;
+  font-family: "Lato";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 20px;
+  color: #ffffff;
+  position: fixed;
+  right: 0;
+  top: 72px;
+  :hover {
+    cursor: pointer;
+  }
 `;
 const TimelinePosts = styled.div`
   width: 937px;
@@ -683,4 +708,9 @@ const EditInput = styled.input`
   font-family: "Lato";
   font-size: 18px;
   padding-left: 7px;
+`;
+const NaviIcon = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 `;
