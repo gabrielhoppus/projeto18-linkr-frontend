@@ -5,6 +5,7 @@ import axios from "axios";
 import { AuthContext } from "../contexts/auth.context";
 import DeleteModal from "../components/modal";
 import { useNavigate, Link } from "react-router-dom";
+import { Header } from "../components/Header";
 
 import swal from "sweetalert";
 
@@ -25,8 +26,7 @@ export default function Timeline() {
       navigate("/");
     }
   });
-  const [chevron, setChevron] = useState("chevron-down");
-  const [iconUp, setIconUp] = useState(false);
+
   const [liked, setLiked] = useState("heart-outline");
   const [cor, setColor] = useState("#ffffff");
   const [likes, setLikes] = useState(247);
@@ -37,7 +37,6 @@ export default function Timeline() {
   const [showLogout, setShowLogout] = useState(false);
   const [modalvisible, setModalvisible] = useState(false);
   const [editPost, setEditPost] = useState(false);
-  const [usage, setUsage] = useState(true);
   const URLposts = `${API_URL}/posts`;
   const URLtrendings = `${API_URL}/hashtag`;
   const [postData, setPostData] = useState("");
@@ -130,10 +129,6 @@ export default function Timeline() {
     }
   }
 
-  function logout(e) {
-    e.preventdefault();
-  }
-
   function handleTagClick(tag) {
     tag = tag.replace("#", "");
     navigate(`/hashtag/${ tag }`);
@@ -156,20 +151,7 @@ export default function Timeline() {
   
   return (
     <Body dataLength={posts.length > 2}>
-      <Header>
-        <h1>linkr</h1>
-        <form onSubmit={search}>
-          <input type="text" placeholder="Search for People"></input>
-          <button type="submit">
-            <ion-icon name="search-outline"></ion-icon>
-          </button>
-        </form>
-        <span>
-          <ion-icon name={chevron} onClick={logout}></ion-icon>
-          <img src={picture} alt="user"></img>
-        </span>
-      </Header>
-      <Logout showLogout={showLogout}>Logout</Logout>
+      <Header/>
       <TimelinePosts>
         <title>timeline</title>
         <Section>
@@ -298,101 +280,101 @@ const Body = styled.div`
   padding-top: 102px;
   position: relative;
 `;
-const Header = styled.header`
-  width: 100%;
-  height: 72px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #000000;
-  box-sizing: border-box;
-  padding-left: 20px;
-  padding-right: 20px;
-  position: fixed;
-  top: 0;
-  h1 {
-    font-family: "Passion One";
-    font-style: normal;
-    font-weight: 700;
-    font-size: 49px;
-    line-height: 54px;
-    color: #ffffff;
-  }
-  form {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    input {
-      width: 513px;
-      height: 45px;
-      background: #ffffff;
-      font-family: "Lato";
-      font-style: normal;
-      font-weight: 200;
-      font-size: 18px;
-      color: #000000;
-      box-sizing: border-box;
-      border-top-left-radius: 10px;
-      border-bottom-left-radius: 10px;
-      border: none;
-      padding-left: 20px;
-      &:placeholder-shown {
-        line-height: 25px;
-        padding-left: 20px;
-        color: #dbdbdb;
-      }
-    }
-    button {
-      width: 50px;
-      height: 45px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-top-right-radius: 10px;
-      border-bottom-right-radius: 10px;
-      background-color: #ffffff;
-      border: none;
-      ion-icon {
-        color: #c6c6c6;
-        font-size: 25px;
-        --ionicon-stroke-width: 50px;
-      }
-      &:hover {
-        cursor: pointer;
-        background-color: #333333;
-        transition: 0.5s;
-        ion-icon {
-          --ionicon-stroke-width: 70px;
-          color: #ffffff;
-          transition: 0.5s;
-        }
-      }
-      &:not(:hover) {
-        transition: 0.5s;
-        ion-icon {
-          transition: 0.5s;
-        }
-      }
-    }
-  }
-  span {
-    width: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    ion-icon {
-      color: #ffffff;
-      font-size: 35px;
-      &:hover {
-        cursor: pointer;
-      }
-    }
-    img {
-      width: 53px;
-      clip-path: circle(50% at 50% 50%);
-    }
-  }
-`;
+// const Header = styled.header`
+//   width: 100%;
+//   height: 72px;
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
+//   background-color: #000000;
+//   box-sizing: border-box;
+//   padding-left: 20px;
+//   padding-right: 20px;
+//   position: fixed;
+//   top: 0;
+//   h1 {
+//     font-family: "Passion One";
+//     font-style: normal;
+//     font-weight: 700;
+//     font-size: 49px;
+//     line-height: 54px;
+//     color: #ffffff;
+//   }
+//   form {
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     input {
+//       width: 513px;
+//       height: 45px;
+//       background: #ffffff;
+//       font-family: "Lato";
+//       font-style: normal;
+//       font-weight: 200;
+//       font-size: 18px;
+//       color: #000000;
+//       box-sizing: border-box;
+//       border-top-left-radius: 10px;
+//       border-bottom-left-radius: 10px;
+//       border: none;
+//       padding-left: 20px;
+//       &:placeholder-shown {
+//         line-height: 25px;
+//         padding-left: 20px;
+//         color: #dbdbdb;
+//       }
+//     }
+//     button {
+//       width: 50px;
+//       height: 45px;
+//       display: flex;
+//       align-items: center;
+//       justify-content: center;
+//       border-top-right-radius: 10px;
+//       border-bottom-right-radius: 10px;
+//       background-color: #ffffff;
+//       border: none;
+//       ion-icon {
+//         color: #c6c6c6;
+//         font-size: 25px;
+//         --ionicon-stroke-width: 50px;
+//       }
+//       &:hover {
+//         cursor: pointer;
+//         background-color: #333333;
+//         transition: 0.5s;
+//         ion-icon {
+//           --ionicon-stroke-width: 70px;
+//           color: #ffffff;
+//           transition: 0.5s;
+//         }
+//       }
+//       &:not(:hover) {
+//         transition: 0.5s;
+//         ion-icon {
+//           transition: 0.5s;
+//         }
+//       }
+//     }
+//   }
+//   span {
+//     width: 100px;
+//     display: flex;
+//     align-items: center;
+//     justify-content: space-between;
+//     ion-icon {
+//       color: #ffffff;
+//       font-size: 35px;
+//       &:hover {
+//         cursor: pointer;
+//       }
+//     }
+//     img {
+//       width: 53px;
+//       clip-path: circle(50% at 50% 50%);
+//     }
+//   }
+// `;
 const Logout = styled.p`
   width: 150px;
   height: 47px;
