@@ -8,10 +8,11 @@ import axios from "axios";
 import jwt from 'jwt-decode';
 
 export default function SignIn() {
-    const { API_URL, setToken, setName, setPicture, token } = useContext(AuthContext);
+    const { API_URL, setToken, setName, setPicture, token, setLogged } = useContext(AuthContext);
     const navigate = useNavigate();
     useEffect(() => {
         if (token)
+            setLogged(true)
             navigate('/timeline');
     })
     const [form, setForm] = useState({
