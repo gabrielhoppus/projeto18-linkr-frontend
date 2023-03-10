@@ -5,6 +5,7 @@ import axios from "axios";
 import { AuthContext } from "../contexts/auth.context";
 import DeleteModal from "../components/modal";
 import { useNavigate, Link } from "react-router-dom";
+import { Header } from "../components/Header";
 
 import swal from "sweetalert";
 
@@ -25,8 +26,7 @@ export default function Timeline() {
       navigate("/");
     }
   });
-  const [chevron, setChevron] = useState("chevron-down");
-  const [iconUp, setIconUp] = useState(false);
+
   const [liked, setLiked] = useState("heart-outline");
   const [cor, setColor] = useState("#ffffff");
   const [likes, setLikes] = useState(247);
@@ -37,7 +37,6 @@ export default function Timeline() {
   const [showLogout, setShowLogout] = useState(false);
   const [modalvisible, setModalvisible] = useState(false);
   const [editPost, setEditPost] = useState(false);
-  const [usage, setUsage] = useState(true);
   const URLposts = `${API_URL}/posts`;
   const URLtrendings = `${API_URL}/hashtag`;
   const [postData, setPostData] = useState("");
@@ -55,11 +54,12 @@ export default function Timeline() {
 
 
   useEffect(() => {
-    getPosts();
-  }, []);
+    getPosts()
 
+  }, [])
   function getPosts() {
-    const promise = axios.get(URLposts, config);
+    const promise = axios.get(URLposts, config)
+
     promise.then((res) => {
       setPosts(res.data);
     });
@@ -92,30 +92,28 @@ export default function Timeline() {
         alert(err.response.data.message);
       });
 
-    // postHashTag()
+    postHashTag();
   }
 
-  //   function postHashTag(e) {
-  //     e.preventDefault();
+    function postHashTag() {
+      let commentArray = comment.split(" ")
 
-  //     let commentArray = comment.split(" ")
+      let commentFiltered = commentArray.filter(el=> el[0] === "#")
 
-  //     let commentFiltered = commentArray.filter(el=> el[0] === "#")
-
-  //     if(commentFiltered.length > 0) {
-  //       commentFiltered.forEach(el=>{
-  //         el.replace("#","")
-  //         const body = {name:el}
-  //         const promise = axios.post(URLposts, body, config);
-  //         promise.then((res) => {
-  //             console.log(res.data);
-  //         })
-  //         promise.catch((err) => {
-  //             alert(err.response.data.message);
-  //         })
-  //       })
-  //   }
-  // }
+      if(commentFiltered.length > 0) {
+        commentFiltered.forEach(el=>{
+          el.replace("#","")
+          const body = {name:el}
+          const promise = axios.post(URLtrendings, body, config);
+          promise.then((res) => {
+              console.log(res.data);
+          })
+          promise.catch((err) => {
+              alert(err.response.data.message);
+          })
+        })
+    }
+  }
 
   function search(e) {
     e.preventdefault();
@@ -131,9 +129,11 @@ export default function Timeline() {
     }
   }
 
-  function logout(e) {
-    e.preventdefault();
-  }
+  function handleTagClick(tag) {
+    tag = tag.replace("#", "");
+    navigate(`/hashtag/${ tag }`);
+    }
+
 
 
   function deletePost(post_id) {
@@ -148,22 +148,10 @@ export default function Timeline() {
         alert(err.response.data.message);
       });
   }
+  
   return (
     <Body dataLength={posts.length > 2}>
-      <Header>
-        <h1>linkr</h1>
-        <form onSubmit={search}>
-          <input type="text" placeholder="Search for People"></input>
-          <button type="submit">
-            <ion-icon name="search-outline"></ion-icon>
-          </button>
-        </form>
-        <span>
-          <ion-icon name={chevron} onClick={logout}></ion-icon>
-          <img src={picture} alt="user"></img>
-        </span>
-      </Header>
-      <Logout showLogout={showLogout}>Logout</Logout>
+      <Header/>
       <TimelinePosts>
         <title>timeline</title>
         <Section>
@@ -193,69 +181,59 @@ export default function Timeline() {
                 </button>
               </form>
             </div>
-            {posts.length ? 
+            {posts.length ?
 
-            posts.map((i) => (
-              /*<ReactTagify 
-              tagStyle={tagStyle}
-              tagClicked={(tag)=> {
-                tag.replace("#","")
-                navigate(`/hashtag/${tag}`)
-              }}>*/
-              <Post key={i.id}>
-                <div className="userPost">
-                  <img src={picture} alt="user"></img>
-                  <ion-icon
-                    onClick={likePost}
-                    style={{ color: cor }}
-                    name={liked}
-                  ></ion-icon>
-                  <p className="likes">{`${likes} likes`}</p>
-                </div>
-                <div className="dataPost">
 
-                  <NaviIcon>
-                    <StyledLink to={`/user/${i.id}`}>
-                      <h4 className="userName">{name}</h4>
-                    </StyledLink>
-                    <IconContainer>
-                      {" "}
-                      <Editicon onClick={() => setEditPost(!editPost)}>
-                        <ion-icon name="create-outline"></ion-icon>
-                      </Editicon>
-                      <TrashIcon
-                        onClick={() => {
-                          setPostData(i.id);
-                          console.log("i: ", i, "state: ", postData);
-                          setModalvisible(!modalvisible);
-                        }}
-                      >
-                        <ion-icon name="trash-outline"></ion-icon>
-                      </TrashIcon>
-                    </IconContainer>
-                  </NaviIcon>
+              posts.map((i) => (
+                  <Post key={i.id}>
+                  
+                    <div className="userPost">
+                      <img src={picture} alt="user"></img>
+                      <ion-icon
+                        onClick={likePost}
+                        style={{ color: cor }}
+                        name={liked}
+                      ></ion-icon>
+                      <p className="likes">{`${likes} likes`}</p>
+                    </div>
+                    <div className="dataPost">
+                      <StyledLink to={`/user/${i.id}`} onClick={() => setName(i.username)}>
+                        <h4 className="userName">{name}</h4>
+                      </StyledLink>
+                      <IconContainer>
+                        {" "}
+                        <Editicon onClick={() => setEditPost(!editPost)}>
+                          <ion-icon name="create-outline"></ion-icon>
+                        </Editicon>
+                        <TrashIcon onClick={() => setModalvisible(!modalvisible)}>
+                          <ion-icon name="trash-outline"></ion-icon>
+                        </TrashIcon>
+                      </IconContainer>
+                      {editPost === true ? (
+                        <EditInput></EditInput>
+                    ) : (
+                        <ReactTagify
+                          tagStyle={tagStyle}
+                          tagClicked={handleTagClick}>
+                        <p className="description">
+                          {i.comment}
+                          </p>
+                        </ReactTagify>
+                      )}
+                      <UrlContent href={i.url} style={{ textDecoration: "none" }}>
+                        <p className="urlTitle">
+                          Como aplicar o Material UI em um projeto React
+                        </p>
+                        <p className="urlDescription">{i.description}</p>
+                        <p className="urlLink">{i.url}</p>
+                        <img src={i.image} alt="image"></img>
+                      </UrlContent>
+                    </div>
 
-                  {editPost === true ? (
-                    <EditInput></EditInput>
-                  ) : (
-                    <p className="description">{i.comment}</p>
-                  )}
-                  <UrlContent href={i.url} style={{ textDecoration: "none" }}>
-                    <p className="urlTitle">
-                      Como aplicar o Material UI em um projeto React
-                    </p>
-                    <p className="urlDescription">{i.description}</p>
-                    <p className="urlLink">{i.url}</p>
-                    <img src={i.image} alt="image"></img>
-                  </UrlContent>
-                </div>
-              </Post>))
-              //</Posts></ReactTagify>
+                  </Post>
+
               
-            :  <></>
-            //
-          }
-
+              )): <></>}
           </Posts>
           <Trendings>
             <p className="title">trending</p>
@@ -302,101 +280,101 @@ const Body = styled.div`
   padding-top: 102px;
   position: relative;
 `;
-const Header = styled.header`
-  width: 100%;
-  height: 72px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #000000;
-  box-sizing: border-box;
-  padding-left: 20px;
-  padding-right: 20px;
-  position: fixed;
-  top: 0;
-  h1 {
-    font-family: "Passion One";
-    font-style: normal;
-    font-weight: 700;
-    font-size: 49px;
-    line-height: 54px;
-    color: #ffffff;
-  }
-  form {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    input {
-      width: 513px;
-      height: 45px;
-      background: #ffffff;
-      font-family: "Lato";
-      font-style: normal;
-      font-weight: 200;
-      font-size: 18px;
-      color: #000000;
-      box-sizing: border-box;
-      border-top-left-radius: 10px;
-      border-bottom-left-radius: 10px;
-      border: none;
-      padding-left: 20px;
-      &:placeholder-shown {
-        line-height: 25px;
-        padding-left: 20px;
-        color: #dbdbdb;
-      }
-    }
-    button {
-      width: 50px;
-      height: 45px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-top-right-radius: 10px;
-      border-bottom-right-radius: 10px;
-      background-color: #ffffff;
-      border: none;
-      ion-icon {
-        color: #c6c6c6;
-        font-size: 25px;
-        --ionicon-stroke-width: 50px;
-      }
-      &:hover {
-        cursor: pointer;
-        background-color: #333333;
-        transition: 0.5s;
-        ion-icon {
-          --ionicon-stroke-width: 70px;
-          color: #ffffff;
-          transition: 0.5s;
-        }
-      }
-      &:not(:hover) {
-        transition: 0.5s;
-        ion-icon {
-          transition: 0.5s;
-        }
-      }
-    }
-  }
-  span {
-    width: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    ion-icon {
-      color: #ffffff;
-      font-size: 35px;
-      &:hover {
-        cursor: pointer;
-      }
-    }
-    img {
-      width: 53px;
-      clip-path: circle(50% at 50% 50%);
-    }
-  }
-`;
+// const Header = styled.header`
+//   width: 100%;
+//   height: 72px;
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
+//   background-color: #000000;
+//   box-sizing: border-box;
+//   padding-left: 20px;
+//   padding-right: 20px;
+//   position: fixed;
+//   top: 0;
+//   h1 {
+//     font-family: "Passion One";
+//     font-style: normal;
+//     font-weight: 700;
+//     font-size: 49px;
+//     line-height: 54px;
+//     color: #ffffff;
+//   }
+//   form {
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     input {
+//       width: 513px;
+//       height: 45px;
+//       background: #ffffff;
+//       font-family: "Lato";
+//       font-style: normal;
+//       font-weight: 200;
+//       font-size: 18px;
+//       color: #000000;
+//       box-sizing: border-box;
+//       border-top-left-radius: 10px;
+//       border-bottom-left-radius: 10px;
+//       border: none;
+//       padding-left: 20px;
+//       &:placeholder-shown {
+//         line-height: 25px;
+//         padding-left: 20px;
+//         color: #dbdbdb;
+//       }
+//     }
+//     button {
+//       width: 50px;
+//       height: 45px;
+//       display: flex;
+//       align-items: center;
+//       justify-content: center;
+//       border-top-right-radius: 10px;
+//       border-bottom-right-radius: 10px;
+//       background-color: #ffffff;
+//       border: none;
+//       ion-icon {
+//         color: #c6c6c6;
+//         font-size: 25px;
+//         --ionicon-stroke-width: 50px;
+//       }
+//       &:hover {
+//         cursor: pointer;
+//         background-color: #333333;
+//         transition: 0.5s;
+//         ion-icon {
+//           --ionicon-stroke-width: 70px;
+//           color: #ffffff;
+//           transition: 0.5s;
+//         }
+//       }
+//       &:not(:hover) {
+//         transition: 0.5s;
+//         ion-icon {
+//           transition: 0.5s;
+//         }
+//       }
+//     }
+//   }
+//   span {
+//     width: 100px;
+//     display: flex;
+//     align-items: center;
+//     justify-content: space-between;
+//     ion-icon {
+//       color: #ffffff;
+//       font-size: 35px;
+//       &:hover {
+//         cursor: pointer;
+//       }
+//     }
+//     img {
+//       width: 53px;
+//       clip-path: circle(50% at 50% 50%);
+//     }
+//   }
+// `;
 const Logout = styled.p`
   width: 150px;
   height: 47px;

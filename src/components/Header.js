@@ -1,17 +1,20 @@
 import { useContext, useState } from "react"
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components"
-import { AuthContext } from "../contexts/auth.context"
+import { AuthContext } from "../contexts/auth.context";
 
 export function Header() {
-    const { picture } = useContext(AuthContext);
-    const [chevron, setChevron] = useState('chevron-down');
+    const { picture, setToken } = useContext(AuthContext);
     const [showLogout, setShowLogout] = useState(false);
+    const navigate = useNavigate();
+
     async function search(e) {
         e.preventDefault();
     }
     function logout() {
-
+        setToken(null);
+        localStorage.removeItem('token');
+        navigate('/');
     }
     return (
         <>
@@ -23,18 +26,20 @@ export function Header() {
                         <ion-icon name="search-outline"></ion-icon>
                     </button>
                 </form>
-                <span>
-                    <ion-icon name={chevron} onClick={logout}></ion-icon>
+                <span onClick={() => setShowLogout(!showLogout)}>
+                    <ion-icon name=
+                        {showLogout ? 'chevron-up' : 'chevron-down'} />
                     <img src={picture} alt="user"></img>
                 </span>
             </StyledHeader>
-            <Logout showLogout={showLogout}>Logout</Logout>
+            <Logout showLogout={showLogout} onClick={logout}>Logout</Logout>
         </>
     )
 }
 
 const StyledHeader = styled.header`
-width: 100%;
+    z-index: 1;
+    width: 100%;
   height: 72px;
   display: flex;
   align-items: center;
