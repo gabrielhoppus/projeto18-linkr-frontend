@@ -11,7 +11,7 @@ import swal from "sweetalert";
 import { ReactTagify } from "react-tagify";
 
 
-export default function Timeline(){
+export default function Timeline() {
   const navigate = useNavigate();
   const { API_URL, name, picture } = useContext(AuthContext);
   const token = localStorage.getItem("token")
@@ -33,7 +33,7 @@ export default function Timeline(){
   const [likes, setLikes] = useState(247);
   const [posts, setPosts] = useState([]);
   const [hashtags, setHashtags] = useState([]);
-  const [publishURL, setPubrishURL] = useState("");
+  const [url, setPublishURL] = useState("");
   const [comment, setComment] = useState("");
   const [showLogout, setShowLogout] = useState(false);
   const [modalvisible, setModalvisible] = useState(false);
@@ -55,16 +55,20 @@ export default function Timeline(){
     },
   };
 
-    useEffect(() => {
-        const promise = axios.get(URLposts, config)
-        promise.then((res) => {
-            setPosts(res.data);
-        })
-        promise.catch((err) => {
-            console.log(err.response.data.message);
-            alert("An error occured while trying to fetch the posts, please refresh the page");
-        })
-    }, [])
+  useEffect(() => {    
+    getPosts()
+  }, [])
+
+  function getPosts(){
+    const promise = axios.get(URLposts, config)
+    promise.then((res) => {
+      setPosts(res.data);
+    })
+    promise.catch((err) => {
+      console.log(err.response.data.message);
+      alert("An error occured while trying to fetch the posts, please refresh the page");
+    })
+  }
 
   // useEffect(() => {
   //     const promise = axios.get(URLtrendings, config);
@@ -74,44 +78,45 @@ export default function Timeline(){
   //     promise.catch((err) => { alert(err.response.data.message) })
   // }, [])
 
-    function publishPost(e) {
-        e.preventdefault();
-        
-        const body = { publishURL, comment };
-        const promise = axios.post(URLposts, body, config);
-        promise.then((res) => {
-            console.log(res.data);
-        })
-        promise.catch((err) => {
-            alert(err.response.data.message);
-        })
+  function publishPost(e) {
+    e.preventDefault();
+    console.log("função")
+    const body = { url, comment };
+    axios.post(URLposts, body, config)
+      .then(() => {
+      alert("Post criado com sucesso");
+      setPublishURL("");
+      setComment("");
+      getPosts();
+    })
+      .catch((err) => {
+        alert(err.response.data.message);
+      })
 
-        postHashTag()
-    }
-
-    function postHashTag(e) {
-      e.preventdefault();
-      
-      let commentArray = comment.split(" ")
-
-      let commentFiltered = commentArray.filter(el=> el[0] === "#")
-
-      if(commentFiltered.length > 0) {
-        commentFiltered.forEach(el=>{
-          el.replace("#","")
-          const body = {name:el}
-          const promise = axios.post(URLposts, body, config);
-          promise.then((res) => {
-              console.log(res.data);
-          })
-          promise.catch((err) => {
-              alert(err.response.data.message);
-          })
-        })
-    }
-
-     
+    // postHashTag()
   }
+
+  //   function postHashTag(e) {
+  //     e.preventDefault();
+
+  //     let commentArray = comment.split(" ")
+
+  //     let commentFiltered = commentArray.filter(el=> el[0] === "#")
+
+  //     if(commentFiltered.length > 0) {
+  //       commentFiltered.forEach(el=>{
+  //         el.replace("#","")
+  //         const body = {name:el}
+  //         const promise = axios.post(URLposts, body, config);
+  //         promise.then((res) => {
+  //             console.log(res.data);
+  //         })
+  //         promise.catch((err) => {
+  //             alert(err.response.data.message);
+  //         })
+  //       })
+  //   }
+  // }
 
   function search(e) {
     e.preventdefault();
@@ -159,14 +164,17 @@ export default function Timeline(){
                   className="input inpLink"
                   type="text"
                   placeholder="http://..."
-                  onChange={(e) => setPubrishURL(e.target.value)}
+                  value={url}
+                  onChange={(e) => setPublishURL(e.target.value)}
                   required
                 ></input>
                 <input
                   className="input inpText"
                   type="text"
                   placeholder="Awesome article about #javascript"
+                  value={comment}
                   onChange={(e) => setComment(e.target.value)}
+                  required
                 ></input>
                 <button type="submit" className="publishButton">
                   <h4>Publish</h4>
@@ -174,12 +182,12 @@ export default function Timeline(){
               </form>
             </div>
             {posts.map((i) => (
-              <ReactTagify 
+              /*<ReactTagify 
               tagStyle={tagStyle}
               tagClicked={(tag)=> {
                 tag.replace("#","")
                 navigate(`/hashtag/${tag}`)
-              }}>
+              }}>*/
               <Post key={i.id}>
                 <div className="userPost">
                   <img src={picture} alt="user"></img>
@@ -191,9 +199,9 @@ export default function Timeline(){
                   <p className="likes">{`${likes} likes`}</p>
                 </div>
                 <div className="dataPost">
-                  <Link to={`/user/${i.id}`}>
+                  <StyledLink to={`/user/${i.id}`}>
                     <h4 className="userName">{name}</h4>
-                  </Link>
+                  </StyledLink>
                   <IconContainer>
                     {" "}
                     <Editicon onClick={() => setEditPost(!editPost)}>
@@ -220,7 +228,7 @@ export default function Timeline(){
                   </UrlContent>
                 </div>
               </Post>
-              </ReactTagify>
+              //</Posts></ReactTagify>
             ))}
           </Posts>
           <Trendings>
@@ -245,6 +253,12 @@ export default function Timeline(){
     </Body>
   );
 }
+
+const StyledLink = styled(Link)`
+  &:focus, &:hover, &:visited, &:link, &:active {
+    text-decoration: none;
+  }
+`;
 
 const Body = styled.div`
   width: 100vw;
