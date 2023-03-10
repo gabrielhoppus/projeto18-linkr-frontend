@@ -29,10 +29,16 @@ export function Header() {
                 <span onClick={() => setShowLogout(!showLogout)}>
                     <ion-icon name=
                         {showLogout ? 'chevron-up' : 'chevron-down'} />
-                    <img src={picture} alt="user"></img>
+                    <img
+                        data-test="avatar"
+                        src={picture}
+                        alt="user"></img>
                 </span>
             </StyledHeader>
-            <Logout showLogout={showLogout} onClick={logout}>Logout</Logout>
+            <Logout
+                data-test="menu"
+                showLogout={showLogout}
+                onClick={logout}>Logout</Logout>
         </>
     )
 }
