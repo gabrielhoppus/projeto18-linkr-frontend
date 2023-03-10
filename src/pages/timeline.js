@@ -55,11 +55,11 @@ export default function Timeline() {
     },
   };
 
-  useEffect(() => {    
+  useEffect(() => {
     getPosts()
-    
+
   }, [])
-  function getPosts(){
+  function getPosts() {
     const promise = axios.get(URLposts, config)
     promise.then((res) => {
       setPosts(res.data);
@@ -83,39 +83,37 @@ export default function Timeline() {
     const body = { url, comment };
     axios.post(URLposts, body, config)
       .then(() => {
-      alert("Post criado com sucesso");
-      setPublishURL("");
-      setComment("");
-      getPosts();
-    })
+        alert("Post criado com sucesso");
+        setPublishURL("");
+        setComment("");
+        getPosts();
+      })
       .catch((err) => {
         alert(err.response.data.message);
-      })
+      });
 
-    // postHashTag()
+    postHashTag();
   }
 
-  //   function postHashTag(e) {
-  //     e.preventDefault();
+    function postHashTag() {
+      let commentArray = comment.split(" ")
 
-  //     let commentArray = comment.split(" ")
+      let commentFiltered = commentArray.filter(el=> el[0] === "#")
 
-  //     let commentFiltered = commentArray.filter(el=> el[0] === "#")
-
-  //     if(commentFiltered.length > 0) {
-  //       commentFiltered.forEach(el=>{
-  //         el.replace("#","")
-  //         const body = {name:el}
-  //         const promise = axios.post(URLposts, body, config);
-  //         promise.then((res) => {
-  //             console.log(res.data);
-  //         })
-  //         promise.catch((err) => {
-  //             alert(err.response.data.message);
-  //         })
-  //       })
-  //   }
-  // }
+      if(commentFiltered.length > 0) {
+        commentFiltered.forEach(el=>{
+          el.replace("#","")
+          const body = {name:el}
+          const promise = axios.post(URLtrendings, body, config);
+          promise.then((res) => {
+              console.log(res.data);
+          })
+          promise.catch((err) => {
+              alert(err.response.data.message);
+          })
+        })
+    }
+  }
 
   function search(e) {
     e.preventdefault();
@@ -133,6 +131,10 @@ export default function Timeline() {
 
   function logout(e) {
     e.preventdefault();
+  }
+  function handleTagClick(tag) {
+    tag = tag.replace("#", "");
+    navigate(`/hashtag/${ tag }`);
   }
   return (
     <Body dataLength={posts.length > 2}>
@@ -179,61 +181,58 @@ export default function Timeline() {
                 </button>
               </form>
             </div>
-            {posts.length ? 
+            {posts.length ?
 
-            posts.map((i) => (
-              /*<ReactTagify 
-              tagStyle={tagStyle}
-              tagClicked={(tag)=> {
-                tag.replace("#","")
-                navigate(`/hashtag/${tag}`)
-              }}>*/
-              <Post key={i.id}>
-                <div className="userPost">
-                  <img src={picture} alt="user"></img>
-                  <ion-icon
-                    onClick={likePost}
-                    style={{ color: cor }}
-                    name={liked}
-                  ></ion-icon>
-                  <p className="likes">{`${likes} likes`}</p>
-                </div>
-                <div className="dataPost">
-                  <StyledLink to={`/user/${i.id}`} onClick={() => setName(i.username)}>
-                    <h4 className="userName">{name}</h4>
-                  </StyledLink>
-                  <IconContainer>
-                    {" "}
-                    <Editicon onClick={() => setEditPost(!editPost)}>
-                      <ion-icon name="create-outline"></ion-icon>
-                    </Editicon>
-                    <TrashIcon onClick={() => setModalvisible(!modalvisible)}>
-                      <ion-icon name="trash-outline"></ion-icon>
-                    </TrashIcon>
-                  </IconContainer>
-                  {editPost === true ? (
-                    <EditInput></EditInput>
-                  ) : (
-                    <p className="description">
-                      {i.comment}
-                    </p>
-                  )}
-                  <UrlContent href={i.url} style={{ textDecoration: "none" }}>
-                    <p className="urlTitle">
-                      Como aplicar o Material UI em um projeto React
-                    </p>
-                    <p className="urlDescription">{i.description}</p>
-                    <p className="urlLink">{i.url}</p>
-                    <img src={i.image} alt="image"></img>
-                  </UrlContent>
-                </div>
-              </Post>))
-              //</Posts></ReactTagify>
+              posts.map((i) => (
+                  <Post key={i.id}>
+                  
+                    <div className="userPost">
+                      <img src={picture} alt="user"></img>
+                      <ion-icon
+                        onClick={likePost}
+                        style={{ color: cor }}
+                        name={liked}
+                      ></ion-icon>
+                      <p className="likes">{`${likes} likes`}</p>
+                    </div>
+                    <div className="dataPost">
+                      <StyledLink to={`/user/${i.id}`} onClick={() => setName(i.username)}>
+                        <h4 className="userName">{name}</h4>
+                      </StyledLink>
+                      <IconContainer>
+                        {" "}
+                        <Editicon onClick={() => setEditPost(!editPost)}>
+                          <ion-icon name="create-outline"></ion-icon>
+                        </Editicon>
+                        <TrashIcon onClick={() => setModalvisible(!modalvisible)}>
+                          <ion-icon name="trash-outline"></ion-icon>
+                        </TrashIcon>
+                      </IconContainer>
+                      {editPost === true ? (
+                        <EditInput></EditInput>
+                    ) : (
+                        <ReactTagify
+                          tagStyle={tagStyle}
+                          tagClicked={handleTagClick}>
+                        <p className="description">
+                          {i.comment}
+                          </p>
+                        </ReactTagify>
+                      )}
+                      <UrlContent href={i.url} style={{ textDecoration: "none" }}>
+                        <p className="urlTitle">
+                          Como aplicar o Material UI em um projeto React
+                        </p>
+                        <p className="urlDescription">{i.description}</p>
+                        <p className="urlLink">{i.url}</p>
+                        <img src={i.image} alt="image"></img>
+                      </UrlContent>
+                    </div>
+
+                  </Post>
+
               
-            :  <></>
-            //
-          }
-
+              )): <></>}
           </Posts>
           <Trendings>
             <p className="title">trending</p>
