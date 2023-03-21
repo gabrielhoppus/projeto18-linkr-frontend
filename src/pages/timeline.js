@@ -6,6 +6,7 @@ import { AuthContext } from "../contexts/auth.context";
 import DeleteModal from "../components/modal";
 import { useNavigate, Link } from "react-router-dom";
 import { Header } from "../components/Header";
+import { IoPencil, IoTrashOutline } from "react-icons/io5";
 
 import swal from "sweetalert";
 
@@ -15,7 +16,7 @@ export default function Timeline() {
   const navigate = useNavigate();
   const { API_URL, name, picture, setName } = useContext(AuthContext);
   const token = localStorage.getItem("token");
-  
+
   useEffect(() => {
     if (!token) {
       swal({
@@ -29,7 +30,7 @@ export default function Timeline() {
 
   const [liked, setLiked] = useState("heart-outline");
   const [cor, setColor] = useState("#ffffff");
-  const [likes, setLikes] = useState(247);
+  const [likes, setLikes] = useState(0);
   const [posts, setPosts] = useState([]);
   const [hashtags, setHashtags] = useState([]);
   const [url, setPublishURL] = useState("");
@@ -55,8 +56,8 @@ export default function Timeline() {
 
   useEffect(() => {
     getPosts()
-
   }, [])
+
   function getPosts() {
     const promise = axios.get(URLposts, config)
 
@@ -95,23 +96,23 @@ export default function Timeline() {
     postHashTag();
   }
 
-    function postHashTag() {
-      let commentArray = comment.split(" ")
+  function postHashTag() {
+    let commentArray = comment.split(" ")
 
-      let commentFiltered = commentArray.filter(el=> el[0] === "#")
+    let commentFiltered = commentArray.filter(el => el[0] === "#")
 
-      if(commentFiltered.length > 0) {
-        commentFiltered.forEach(el=>{
-          el.replace("#","")
-          const body = {name:el}
-          const promise = axios.post(URLtrendings, body, config);
-          promise.then((res) => {
-              console.log(res.data);
-          })
-          promise.catch((err) => {
-              alert(err.response.data.message);
-          })
+    if (commentFiltered.length > 0) {
+      commentFiltered.forEach(el => {
+        el.replace("#", "")
+        const body = { name: el }
+        const promise = axios.post(URLtrendings, body, config);
+        promise.then((res) => {
+          console.log(res.data);
         })
+        promise.catch((err) => {
+          alert(err.response.data.message);
+        })
+      })
     }
   }
 
@@ -121,6 +122,7 @@ export default function Timeline() {
 
   function likePost() {
     if (liked === "heart") {
+      
       setLiked("heart-outline");
       setColor("#ffffff");
     } else {
@@ -131,8 +133,8 @@ export default function Timeline() {
 
   function handleTagClick(tag) {
     tag = tag.replace("#", "");
-    navigate(`/hashtag/${ tag }`);
-    }
+    navigate(`/hashtag/${tag}`);
+  }
 
 
 
@@ -148,10 +150,10 @@ export default function Timeline() {
         alert(err.response.data.message);
       });
   }
-  
+
   return (
     <Body dataLength={posts.length > 2}>
-      <Header/>
+      <Header />
       <TimelinePosts>
         <title>timeline</title>
         <Section>
@@ -182,58 +184,56 @@ export default function Timeline() {
               </form>
             </div>
             {posts.length ?
-
-
               posts.map((i) => (
-                  <Post key={i.id}>
-                  
-                    <div className="userPost">
-                      <img src={picture} alt="user"></img>
-                      <ion-icon
-                        onClick={likePost}
-                        style={{ color: cor }}
-                        name={liked}
-                      ></ion-icon>
-                      <p className="likes">{`${likes} likes`}</p>
-                    </div>
-                    <div className="dataPost">
+                <Post key={i.id}>
+
+                  <div className="userPost">
+                    <img src={picture} alt="user"></img>
+                    <ion-icon
+                      onClick={likePost}
+                      style={{ color: cor }}
+                      name={liked}
+                    ></ion-icon>
+                    <p className="likes">{`${likes} likes`}</p>
+                  </div>
+                  <div className="dataPost">
+                    <TopContainer>
                       <StyledLink to={`/user/${i.id}`} onClick={() => setName(i.username)}>
                         <h4 className="userName">{name}</h4>
                       </StyledLink>
                       <IconContainer>
                         {" "}
-                        <Editicon onClick={() => setEditPost(!editPost)}>
-                          <ion-icon name="create-outline"></ion-icon>
-                        </Editicon>
+                        <PencilIcon onClick={() => setEditPost(!editPost)}></PencilIcon>
                         <TrashIcon onClick={() => setModalvisible(!modalvisible)}>
-                          <ion-icon name="trash-outline"></ion-icon>
+
                         </TrashIcon>
                       </IconContainer>
-                      {editPost === true ? (
-                        <EditInput></EditInput>
+                    </TopContainer>
+                    {editPost === true ? (
+                      <EditInput></EditInput>
                     ) : (
-                        <ReactTagify
-                          tagStyle={tagStyle}
-                          tagClicked={handleTagClick}>
+                      <ReactTagify
+                        tagStyle={tagStyle}
+                        tagClicked={handleTagClick}>
                         <p className="description">
                           {i.comment}
-                          </p>
-                        </ReactTagify>
-                      )}
-                      <UrlContent href={i.url} style={{ textDecoration: "none" }}>
-                        <p className="urlTitle">
-                          Como aplicar o Material UI em um projeto React
                         </p>
-                        <p className="urlDescription">{i.description}</p>
-                        <p className="urlLink">{i.url}</p>
-                        <img src={i.image} alt="image"></img>
-                      </UrlContent>
-                    </div>
+                      </ReactTagify>
+                    )}
+                    <UrlContent href={i.url} style={{ textDecoration: "none" }}>
+                      <p className="urlTitle">
+                        Como aplicar o Material UI em um projeto React
+                      </p>
+                      <p className="urlDescription">{i.description}</p>
+                      <p className="urlLink">{i.url}</p>
+                      <img src={i.image} alt="image"></img>
+                    </UrlContent>
+                  </div>
 
-                  </Post>
+                </Post>
 
-              
-              )): <></>}
+
+              )) : <></>}
           </Posts>
           <Trendings>
             <p className="title">trending</p>
@@ -270,9 +270,27 @@ const StyledLink = styled(Link)`
   }
 `;
 
+const PencilIcon = styled(IoPencil)`
+  color: white;
+  font-size: 24px;
+  margin: 0 5px;
+  &:hover {
+    color: lightblue;
+  }`
+;
+
+const TrashIcon = styled(IoTrashOutline)`
+  color: white;
+  font-size: 24px;
+  margin: 0 5px;
+  &:hover {
+    color: crimson;
+  }
+`
+
 const Body = styled.div`
-  width: 100vw;
-  height: ${(props) => (props.dataLength ? "max-content" : "100vh")};
+  width: 100%;
+  height: ${(props) => (props.dataLength ? "max-content" : "100%")};
   display: flex;
   justify-content: center;
   background-color: #333333;
@@ -560,6 +578,13 @@ const Trendings = styled.aside`
     }
   }
 `;
+
+const TopContainer = styled.div`
+  width: 511px;
+  display: flex;
+  justify-content: space-between;
+`;
+
 const Post = styled.div`
   width: 611px;
   height: 276px;
@@ -568,6 +593,7 @@ const Post = styled.div`
   box-sizing: border-box;
   padding: 16px;
   border-radius: 16px;
+  margin-bottom: 16px;
   .userPost {
     display: flex;
     flex-direction: column;
@@ -575,13 +601,14 @@ const Post = styled.div`
     img {
       width: 53px;
       height: 53px;
-      clip-path: circle(50% at 50% 50%);
-      margin-bottom: 12px;
+      border-radius: 26.5px;
+      margin-bottom: 19px;
       margin-right: 15px;
     }
     ion-icon {
       font-size: 25px;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
+      margin-right: 15px;
       &:hover {
         cursor: pointer;
       }
@@ -591,6 +618,7 @@ const Post = styled.div`
       font-style: normal;
       font-weight: 400;
       font-size: 11px;
+      margin-right: 15px;
       color: #ffffff;
     }
   }
@@ -667,22 +695,8 @@ const PostHeader = styled.div`
   align-items: center;
   justify-content: space-between;
 `;
-const TrashIcon = styled.div`
-  color: white;
-  font-size: 24px;
-  margin: 0 5px;
-  &:hover {
-    color: crimson;
-  }
-`;
-const Editicon = styled.div`
-  color: white;
-  font-size: 24px;
-  margin: 0 5px;
-  &:hover {
-    color: lightblue;
-  }
-`;
+
+
 const IconContainer = styled.div`
   display: flex;
 `;
