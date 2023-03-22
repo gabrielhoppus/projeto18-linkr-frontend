@@ -6,6 +6,7 @@ import { AuthContext } from "../contexts/auth.context";
 import DeleteModal from "../components/modal";
 import { useNavigate, Link } from "react-router-dom";
 import { Header } from "../components/Header";
+import { IoPencil, IoTrashOutline } from "react-icons/io5";
 
 import swal from "sweetalert";
 import Post from "../components/Post/Post";
@@ -13,7 +14,9 @@ import Post from "../components/Post/Post";
 export default function Timeline() {
   const { API_URL, name, picture, setName } = useContext(AuthContext);
   const token = localStorage.getItem("token");
+
   const navigate = useNavigate();
+
 
   useEffect(() => {
     if (!token) {
@@ -26,7 +29,9 @@ export default function Timeline() {
     }
   });
 
+
   const [likes, setLikes] = useState(247);
+
   const [posts, setPosts] = useState([]);
   const [hashtags, setHashtags] = useState([]);
   const [url, setPublishURL] = useState("");
@@ -45,8 +50,10 @@ export default function Timeline() {
   };
 
   useEffect(() => {
+
     getPosts();
   }, []);
+
   function getPosts() {
     const promise = axios.get(URLposts, config);
 
@@ -88,6 +95,7 @@ export default function Timeline() {
   }
 
   function postHashTag() {
+
     let commentArray = comment.split(" ");
 
     let commentFiltered = commentArray.filter((el) => el[0] === "#");
@@ -104,12 +112,16 @@ export default function Timeline() {
           alert(err.response.data.message);
         });
       });
+
+    
     }
   }
 
   function search(e) {
     e.preventdefault();
   }
+
+
 
   function deletePost(post_id) {
     axios
@@ -156,6 +168,7 @@ export default function Timeline() {
                 </button>
               </form>
             </div>
+
             {posts.length ? (
               posts.map((i) => (
                 <Post
@@ -174,6 +187,8 @@ export default function Timeline() {
             ) : (
               <></>
             )}
+
+  
           </Posts>
           <Trendings>
             <p className="title">trending</p>
@@ -210,9 +225,27 @@ const StyledLink = styled(Link)`
   }
 `;
 
+const PencilIcon = styled(IoPencil)`
+  color: white;
+  font-size: 24px;
+  margin: 0 5px;
+  &:hover {
+    color: lightblue;
+  }`
+;
+
+const TrashIcon = styled(IoTrashOutline)`
+  color: white;
+  font-size: 24px;
+  margin: 0 5px;
+  &:hover {
+    color: crimson;
+  }
+`
+
 const Body = styled.div`
-  width: 100vw;
-  height: ${(props) => (props.dataLength ? "max-content" : "100vh")};
+  width: 100%;
+  height: ${(props) => (props.dataLength ? "max-content" : "100%")};
   display: flex;
   justify-content: center;
   background-color: #333333;
@@ -406,3 +439,4 @@ const Trendings = styled.aside`
     }
   }
 `;
+
