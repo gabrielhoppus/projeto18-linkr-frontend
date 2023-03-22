@@ -8,14 +8,13 @@ import { useNavigate, Link } from "react-router-dom";
 import { Header } from "../components/Header";
 
 import swal from "sweetalert";
-
-import { ReactTagify } from "react-tagify";
+import Post from "../components/Post/Post";
 
 export default function Timeline() {
-  const navigate = useNavigate();
   const { API_URL, name, picture, setName } = useContext(AuthContext);
   const token = localStorage.getItem("token");
-  
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (!token) {
       swal({
@@ -27,8 +26,6 @@ export default function Timeline() {
     }
   });
 
-  const [liked, setLiked] = useState("heart-outline");
-  const [cor, setColor] = useState("#ffffff");
   const [likes, setLikes] = useState(247);
   const [posts, setPosts] = useState([]);
   const [hashtags, setHashtags] = useState([]);
@@ -36,15 +33,10 @@ export default function Timeline() {
   const [comment, setComment] = useState("");
   const [showLogout, setShowLogout] = useState(false);
   const [modalvisible, setModalvisible] = useState(false);
-  const [editPost, setEditPost] = useState(false);
+
   const URLposts = `${API_URL}/posts`;
   const URLtrendings = `${API_URL}/hashtag`;
   const [postData, setPostData] = useState("");
-  const tagStyle = {
-    color: "white",
-    fontWeight: 700,
-    cursor: "pointer",
-  };
 
   const config = {
     headers: {
@@ -52,21 +44,21 @@ export default function Timeline() {
     },
   };
 
-
   useEffect(() => {
-    getPosts()
-
-  }, [])
+    getPosts();
+  }, []);
   function getPosts() {
-    const promise = axios.get(URLposts, config)
+    const promise = axios.get(URLposts, config);
 
     promise.then((res) => {
       setPosts(res.data);
     });
     promise.catch((err) => {
       console.log(err.message);
-      alert("An error occured while trying to fetch the posts, please refresh the page");
-    })
+      alert(
+        "An error occured while trying to fetch the posts, please refresh the page"
+      );
+    });
   }
 
   // useEffect(() => {
@@ -95,46 +87,29 @@ export default function Timeline() {
     postHashTag();
   }
 
-    function postHashTag() {
-      let commentArray = comment.split(" ")
+  function postHashTag() {
+    let commentArray = comment.split(" ");
 
-      let commentFiltered = commentArray.filter(el=> el[0] === "#")
+    let commentFiltered = commentArray.filter((el) => el[0] === "#");
 
-      if(commentFiltered.length > 0) {
-        commentFiltered.forEach(el=>{
-          el.replace("#","")
-          const body = {name:el}
-          const promise = axios.post(URLtrendings, body, config);
-          promise.then((res) => {
-              console.log(res.data);
-          })
-          promise.catch((err) => {
-              alert(err.response.data.message);
-          })
-        })
+    if (commentFiltered.length > 0) {
+      commentFiltered.forEach((el) => {
+        el.replace("#", "");
+        const body = { name: el };
+        const promise = axios.post(URLtrendings, body, config);
+        promise.then((res) => {
+          console.log(res.data);
+        });
+        promise.catch((err) => {
+          alert(err.response.data.message);
+        });
+      });
     }
   }
 
   function search(e) {
     e.preventdefault();
   }
-
-  function likePost() {
-    if (liked === "heart") {
-      setLiked("heart-outline");
-      setColor("#ffffff");
-    } else {
-      setLiked("heart");
-      setColor("red");
-    }
-  }
-
-  function handleTagClick(tag) {
-    tag = tag.replace("#", "");
-    navigate(`/hashtag/${ tag }`);
-    }
-
-
 
   function deletePost(post_id) {
     axios
@@ -148,10 +123,10 @@ export default function Timeline() {
         alert(err.response.data.message);
       });
   }
-  
+
   return (
     <Body dataLength={posts.length > 2}>
-      <Header/>
+      <Header />
       <TimelinePosts>
         <title>timeline</title>
         <Section>
@@ -181,59 +156,24 @@ export default function Timeline() {
                 </button>
               </form>
             </div>
-            {posts.length ?
-
-
+            {posts.length ? (
               posts.map((i) => (
-                  <Post key={i.id}>
-                  
-                    <div className="userPost">
-                      <img src={picture} alt="user"></img>
-                      <ion-icon
-                        onClick={likePost}
-                        style={{ color: cor }}
-                        name={liked}
-                      ></ion-icon>
-                      <p className="likes">{`${likes} likes`}</p>
-                    </div>
-                    <div className="dataPost">
-                      <StyledLink to={`/user/${i.id}`} onClick={() => setName(i.username)}>
-                        <h4 className="userName">{name}</h4>
-                      </StyledLink>
-                      <IconContainer>
-                        {" "}
-                        <Editicon onClick={() => setEditPost(!editPost)}>
-                          <ion-icon name="create-outline"></ion-icon>
-                        </Editicon>
-                        <TrashIcon onClick={() => setModalvisible(!modalvisible)}>
-                          <ion-icon name="trash-outline"></ion-icon>
-                        </TrashIcon>
-                      </IconContainer>
-                      {editPost === true ? (
-                        <EditInput></EditInput>
-                    ) : (
-                        <ReactTagify
-                          tagStyle={tagStyle}
-                          tagClicked={handleTagClick}>
-                        <p className="description">
-                          {i.comment}
-                          </p>
-                        </ReactTagify>
-                      )}
-                      <UrlContent href={i.url} style={{ textDecoration: "none" }}>
-                        <p className="urlTitle">
-                          Como aplicar o Material UI em um projeto React
-                        </p>
-                        <p className="urlDescription">{i.description}</p>
-                        <p className="urlLink">{i.url}</p>
-                        <img src={i.image} alt="image"></img>
-                      </UrlContent>
-                    </div>
-
-                  </Post>
-
-              
-              )): <></>}
+                <Post
+                  id={i.id}
+                  picture={i.picture}
+                  username={i.username}
+                  comment={i.comment}
+                  url={i.url}
+                  image={i.image}
+                  likes={likes}
+                  description={i.description}
+                  modalvisible={modalvisible}
+                  setModalvisible={setModalvisible}
+                />
+              ))
+            ) : (
+              <></>
+            )}
           </Posts>
           <Trendings>
             <p className="title">trending</p>
@@ -280,101 +220,7 @@ const Body = styled.div`
   padding-top: 102px;
   position: relative;
 `;
-// const Header = styled.header`
-//   width: 100%;
-//   height: 72px;
-//   display: flex;
-//   align-items: center;
-//   justify-content: space-between;
-//   background-color: #000000;
-//   box-sizing: border-box;
-//   padding-left: 20px;
-//   padding-right: 20px;
-//   position: fixed;
-//   top: 0;
-//   h1 {
-//     font-family: "Passion One";
-//     font-style: normal;
-//     font-weight: 700;
-//     font-size: 49px;
-//     line-height: 54px;
-//     color: #ffffff;
-//   }
-//   form {
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
-//     input {
-//       width: 513px;
-//       height: 45px;
-//       background: #ffffff;
-//       font-family: "Lato";
-//       font-style: normal;
-//       font-weight: 200;
-//       font-size: 18px;
-//       color: #000000;
-//       box-sizing: border-box;
-//       border-top-left-radius: 10px;
-//       border-bottom-left-radius: 10px;
-//       border: none;
-//       padding-left: 20px;
-//       &:placeholder-shown {
-//         line-height: 25px;
-//         padding-left: 20px;
-//         color: #dbdbdb;
-//       }
-//     }
-//     button {
-//       width: 50px;
-//       height: 45px;
-//       display: flex;
-//       align-items: center;
-//       justify-content: center;
-//       border-top-right-radius: 10px;
-//       border-bottom-right-radius: 10px;
-//       background-color: #ffffff;
-//       border: none;
-//       ion-icon {
-//         color: #c6c6c6;
-//         font-size: 25px;
-//         --ionicon-stroke-width: 50px;
-//       }
-//       &:hover {
-//         cursor: pointer;
-//         background-color: #333333;
-//         transition: 0.5s;
-//         ion-icon {
-//           --ionicon-stroke-width: 70px;
-//           color: #ffffff;
-//           transition: 0.5s;
-//         }
-//       }
-//       &:not(:hover) {
-//         transition: 0.5s;
-//         ion-icon {
-//           transition: 0.5s;
-//         }
-//       }
-//     }
-//   }
-//   span {
-//     width: 100px;
-//     display: flex;
-//     align-items: center;
-//     justify-content: space-between;
-//     ion-icon {
-//       color: #ffffff;
-//       font-size: 35px;
-//       &:hover {
-//         cursor: pointer;
-//       }
-//     }
-//     img {
-//       width: 53px;
-//       clip-path: circle(50% at 50% 50%);
-//     }
-//   }
-// `;
+
 const Logout = styled.p`
   width: 150px;
   height: 47px;
@@ -559,143 +405,4 @@ const Trendings = styled.aside`
       color: #ffffff;
     }
   }
-`;
-const Post = styled.div`
-  width: 611px;
-  height: 276px;
-  background: #171717;
-  display: flex;
-  box-sizing: border-box;
-  padding: 16px;
-  border-radius: 16px;
-  .userPost {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    img {
-      width: 53px;
-      height: 53px;
-      clip-path: circle(50% at 50% 50%);
-      margin-bottom: 12px;
-      margin-right: 15px;
-    }
-    ion-icon {
-      font-size: 25px;
-      margin-bottom: 5px;
-      &:hover {
-        cursor: pointer;
-      }
-    }
-    .likes {
-      font-family: "Lato";
-      font-style: normal;
-      font-weight: 400;
-      font-size: 11px;
-      color: #ffffff;
-    }
-  }
-  .dataPost {
-    display: flex;
-    flex-direction: column;
-    .userName,
-    .description {
-      font-family: "Lato";
-      font-style: normal;
-      font-weight: 400;
-    }
-    .userName {
-      font-size: 19px;
-      line-height: 23px;
-      color: #ffffff;
-      margin-bottom: 5px;
-    }
-    .description {
-      font-size: 17px;
-      line-height: 20px;
-      color: #b7b7b7;
-      margin-bottom: 10px;
-    }
-  }
-`;
-const UrlContent = styled.a`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  width: 503px;
-  height: 155px;
-  border: 1px solid #4d4d4d;
-  border-radius: 11px;
-  position: relative;
-  img {
-    position: absolute;
-    right: 0;
-    width: 155px;
-    height: 155px;
-    border-radius: 0px 11px 11px 0px;
-  }
-  .urlTitle,
-  .urlDescription,
-  .urlLink {
-    width: 65%;
-    font-family: "Lato";
-    font-style: normal;
-    font-weight: 400;
-    margin-left: 10px;
-  }
-  .urlTitle {
-    font-size: 16px;
-    line-height: 19px;
-    color: #cecece;
-    margin-top: 24px;
-    margin-bottom: 5px;
-  }
-  .urlDescription {
-    font-size: 11px;
-    line-height: 13px;
-    color: #9b9595;
-    margin-bottom: 13px;
-  }
-  .urlLink {
-    font-size: 11px;
-    line-height: 13px;
-    color: #cecece;
-  }
-`;
-
-const PostHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-const TrashIcon = styled.div`
-  color: white;
-  font-size: 24px;
-  margin: 0 5px;
-  &:hover {
-    color: crimson;
-  }
-`;
-const Editicon = styled.div`
-  color: white;
-  font-size: 24px;
-  margin: 0 5px;
-  &:hover {
-    color: lightblue;
-  }
-`;
-const IconContainer = styled.div`
-  display: flex;
-`;
-const EditInput = styled.input`
-  border-radius: 7px;
-  margin: 7px 0;
-  height: 44px;
-  font-family: "Lato";
-  font-size: 18px;
-  padding-left: 7px;
-`;
-const NaviIcon = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
 `;
