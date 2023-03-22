@@ -4,14 +4,13 @@ import styled from "styled-components";
 
 import Post from "../Post/Post"
 import { AuthContext } from "../../contexts/auth.context";
-import { getPosts } from "../../functions/postFunctions";
+import { getData } from "../../functions/postFunctions";
 
 export default function Posts({ picture }) {
     const token = localStorage.getItem("token");
     const { API_URL } = useContext(AuthContext);
 
     const [posts, setPosts] = useState([]);
-    const [likes, setLikes] = useState(247);
     const [comment, setComment] = useState("");
     const [url, setPublishURL] = useState("");
     const [modalvisible, setModalvisible] = useState(false);
@@ -20,7 +19,7 @@ export default function Posts({ picture }) {
     const URLposts = `${API_URL}/posts`;
     const URLtrendings = `${API_URL}/hashtag`;
 
-
+    const likes = 247;
     const config = {
         headers: {
             Authorization: `Bearer ${token}`,
@@ -30,8 +29,8 @@ export default function Posts({ picture }) {
 
     useEffect(() => {
 
-        getPosts(URLposts, config);
-    }, []);
+        getData(URLposts, setPosts, config);
+    });
 
     function postHashTag() {
 
@@ -65,7 +64,7 @@ export default function Posts({ picture }) {
                 alert("Post criado com sucesso");
                 setPublishURL("");
                 setComment("");
-                getPosts(URLposts, config);
+                getData(URLposts, setPosts, config);
             })
             .catch((err) => {
                 alert(err.response.data.message);
@@ -77,62 +76,74 @@ export default function Posts({ picture }) {
     return (
         <Wrapper>
             <div>
-                <img src={picture} alt="user"></img>
-                <form onSubmit={publishPost}>
-                    <h3>What are you going to share today?</h3>
-                    <input
-                        type="text"
-                        placeholder="http://..."
-                        value={url}
-                        onChange={(e) => setPublishURL(e.target.value)}
-                        required
-                    />
-                    <input
-                        type="text"
-                        placeholder="Awesome article about #javascript"
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                        required
-                    />
-                    <button type="submit">Publish</button>
-                </form>
+                <Publish>
+                    <div>
+                        <img src={picture} alt="user" />
+                    </div>
+                    <div>
+                        <form onSubmit={publishPost}>
+                            <h3>What are you going to share today?</h3>
+                            <input
+                                type="text"
+                                placeholder="http://..."
+                                value={url}
+                                onChange={(e) => setPublishURL(e.target.value)}
+                                required
+                            />
+                            <input
+                                type="text"
+                                placeholder="Awesome article about #javascript"
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                                required
+                            />
+                            <button type="submit">Publish</button>
+                        </form>
+                    </div>
+                </Publish>
             </div>
+            <div>
+                {posts.length ? (
+                    posts.map((p) => (
+                        <Post
+                            id={p.id}
+                            picture={p.picture}
+                            username={p.username}
+                            comment={p.comment}
+                            url={p.url}
+                            image={p.image}
+                            likes={likes}
+                            description={p.description}
+                            modalvisible={modalvisible}
+                            setModalvisible={setModalvisible}
+                        />
+                    ))
+                ) : (
+                    <></>
+                )}
 
-            {posts.length ? (
-                posts.map((p) => (
-                    <Post
-                        id={p.id}
-                        picture={p.picture}
-                        username={p.username}
-                        comment={p.comment}
-                        url={p.url}
-                        image={p.image}
-                        likes={likes}
-                        description={p.description}
-                        modalvisible={modalvisible}
-                        setModalvisible={setModalvisible}
-                    />
-                ))
-            ) : (
-                <></>
-            )}
-
-
+            </div>
         </Wrapper>
     )
 }
 
 const Wrapper = styled.div`
-  > div {
-    width: 611px;
-    height: 209px;
+    >:nth-child(1){
+    width: auto;
+    height: auto;
     display: flex;
+    flex-direction: column;
     box-sizing: border-box;
     padding: 16px;
     background: #ffffff;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 16px;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
+    }
+`
+
+const Publish = styled.div`
+    display: flex;
     img {
       width: 53px;
       height: 53px;
@@ -191,9 +202,7 @@ const Wrapper = styled.div`
         background: #1877f2;
         border-radius: 5px;
         border: none;
-        position: absolute;
-        bottom: 0;
-        right: 0;
+        margin-left: 390px;
         font-family: "Lato";
         font-style: normal;
         font-weight: 700;
@@ -208,5 +217,5 @@ const Wrapper = styled.div`
         }
       }
     }
-  }
-`;
+
+`

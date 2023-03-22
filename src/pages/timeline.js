@@ -9,9 +9,8 @@ import { Header } from "../components/Header";
 import { IoPencil, IoTrashOutline } from "react-icons/io5";
 
 import swal from "sweetalert";
-import Post from "../components/Post/Post";
 import Posts from "../components/Posts/Posts";
-import { getPosts } from "../functions/postFunctions";
+import { getData } from "../functions/postFunctions";
 
 export default function Timeline() {
   const { API_URL, name, picture, setName } = useContext(AuthContext);
@@ -31,13 +30,9 @@ export default function Timeline() {
     }
   });
 
-
-  const [likes, setLikes] = useState(247);
-
   const [posts, setPosts] = useState([]);
   const [hashtags, setHashtags] = useState([]);
-  const [url, setPublishURL] = useState("");
-  const [comment, setComment] = useState("");
+
   const [modalvisible, setModalvisible] = useState(false);
 
   const URLposts = `${API_URL}/posts`;
@@ -60,60 +55,13 @@ export default function Timeline() {
   //     promise.catch((err) => { alert(err.response.data.message) })
   // }, [])
 
-  function publishPost(e) {
-    e.preventDefault();
-    const body = { url, comment };
-    axios
-      .post(URLposts, body, config)
-      .then(() => {
-        alert("Post criado com sucesso");
-        setPublishURL("");
-        setComment("");
-        getPosts(URLposts, config);
-      })
-      .catch((err) => {
-        alert(err.response.data.message);
-      });
-
-    postHashTag();
-  }
-
-  function postHashTag() {
-
-    let commentArray = comment.split(" ");
-
-    let commentFiltered = commentArray.filter((el) => el[0] === "#");
-
-    if (commentFiltered.length > 0) {
-      commentFiltered.forEach((el) => {
-        el.replace("#", "");
-        const body = { name: el };
-        const promise = axios.post(URLtrendings, body, config);
-        promise.then((res) => {
-          console.log(res.data);
-        });
-        promise.catch((err) => {
-          alert(err.response.data.message);
-        });
-      });
-
-    
-    }
-  }
-
-  function search(e) {
-    e.preventdefault();
-  }
-
-
-
   function deletePost(post_id) {
     axios
       .post(`${URLposts}/${post_id}`, config)
       .then(() => {
         alert("Post deletado com sucesso");
         setModalvisible(!modalvisible);
-        getPosts();
+        getData(URLposts, config, setPosts);
       })
       .catch((err) => {
         alert(err.response.data.message);
@@ -126,7 +74,7 @@ export default function Timeline() {
       <TimelinePosts>
         <title>timeline</title>
         <Section>
-          <Posts/>
+          <Posts picture={picture}/>
           <Trendings>
             <p className="title">trending</p>
             <div className="line"></div>
@@ -152,34 +100,6 @@ export default function Timeline() {
     </Body>
   );
 }
-
-const StyledLink = styled(Link)`
-  &:focus,
-  &:hover,
-  &:visited,
-  &:link,
-  &:active {
-    text-decoration: none;
-  }
-`;
-
-const PencilIcon = styled(IoPencil)`
-  color: white;
-  font-size: 24px;
-  margin: 0 5px;
-  &:hover {
-    color: lightblue;
-  }`
-;
-
-const TrashIcon = styled(IoTrashOutline)`
-  color: white;
-  font-size: 24px;
-  margin: 0 5px;
-  &:hover {
-    color: crimson;
-  }
-`
 
 const Body = styled.div`
   width: 100%;
