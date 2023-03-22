@@ -6,7 +6,6 @@ import { AuthContext } from "../contexts/auth.context";
 import { ThreeDots } from "react-loader-spinner";
 import axios from "axios";
 import jwt from "jwt-decode";
-import { Header } from "../components/Header";
 
 export default function SignIn() {
 

@@ -62,11 +62,6 @@ export const Wrapper = styled.div`
   padding: 16px;
   border-radius: 16px;
   margin-bottom: 13px;
-
-  .dataPost {
-    display: flex;
-    flex-direction: column;
-  }
 `;
 
 export const TrashIcon = styled.div`
