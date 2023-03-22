@@ -62,11 +62,6 @@ export const Wrapper = styled.div`
   padding: 16px;
   border-radius: 16px;
   margin-bottom: 13px;
-
-  .dataPost {
-    display: flex;
-    flex-direction: column;
-  }
 `;
 
 export const TrashIcon = styled.div`
@@ -77,7 +72,7 @@ export const TrashIcon = styled.div`
     color: crimson;
   }
 `;
-export const Editicon = styled.div`
+export const EditIcon = styled.div`
   color: white;
   font-size: 24px;
   margin: 0 5px;
@@ -85,9 +80,11 @@ export const Editicon = styled.div`
     color: lightblue;
   }
 `;
+
 export const IconContainer = styled.div`
   display: flex;
 `;
+
 export const EditInput = styled.input`
   border-radius: 7px;
   margin: 7px 0;
@@ -96,11 +93,13 @@ export const EditInput = styled.input`
   font-size: 18px;
   padding-left: 7px;
 `;
-const NaviIcon = styled.div`
+
+export const NaviIcon = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 `;
+
 export const UrlContent = styled.a`
   display: flex;
   flex-direction: column;

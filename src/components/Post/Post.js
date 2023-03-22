@@ -8,7 +8,7 @@ import {
   Likes,
   StyledLink,
   IconContainer,
-  Editicon,
+  EditIcon,
   TrashIcon,
   EditInput,
   Description,
@@ -28,7 +28,7 @@ export default function Post({
   modalvisible,
   setModalvisible,
 }) {
-  const { name, setName } = useContext(AuthContext);
+  const { setName } = useContext(AuthContext);
   const [liked, setLiked] = useState("heart-outline");
   const [cor, setColor] = useState("#ffffff");
   const [editPost, setEditPost] = useState(false);
@@ -73,9 +73,9 @@ export default function Post({
         </StyledLink>
         <IconContainer>
           {" "}
-          <Editicon onClick={() => setEditPost(!editPost)}>
+          <EditIcon onClick={() => setEditPost(!editPost)}>
             <ion-icon name="create-outline"></ion-icon>
-          </Editicon>
+          </EditIcon>
           <TrashIcon onClick={() => setModalvisible(!modalvisible)}>
             <ion-icon name="trash-outline"></ion-icon>
           </TrashIcon>
@@ -91,7 +91,7 @@ export default function Post({
           <h1>Como aplicar o Material UI em um projeto React</h1>
           <h2>{description}</h2>
           <h3>{url}</h3>
-          <img src={image} alt="image"></img>
+          <img src={image} alt="post"></img>
         </UrlContent>
       </DataPost>
     </Wrapper>
