@@ -83,7 +83,7 @@ export default function Post({
         {editPost === true ? (
           <EditInput></EditInput>
         ) : (
-          <ReactTagify tagStyle={tagStyle} tagClicked={handleTagClick}>
+          <ReactTagify tagStyle={tagStyle} tagClicked={(el)=>handleTagClick(el)}>
             <Description>{comment}</Description>
           </ReactTagify>
         )}

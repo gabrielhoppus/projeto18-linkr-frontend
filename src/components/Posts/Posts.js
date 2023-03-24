@@ -14,6 +14,7 @@ export default function Posts({ picture }) {
     const [comment, setComment] = useState("");
     const [url, setPublishURL] = useState("");
     const [modalvisible, setModalvisible] = useState(false);
+    const [postId , setPostId] = useState()
 
 
     const URLposts = `${API_URL}/posts`;
@@ -30,25 +31,39 @@ export default function Posts({ picture }) {
     useEffect(() => {
 
         getData(URLposts, setPosts, config);
-    });
+
+        
+
+    },[]);
 
     function postHashTag() {
+
+        
 
         let commentArray = comment.split(" ");
 
         let commentFiltered = commentArray.filter((el) => el[0] === "#");
 
+        console.log(commentFiltered)
+
         if (commentFiltered.length > 0) {
             commentFiltered.forEach((el) => {
-                el.replace("#", "");
                 const body = { name: el };
+                let hashtagId = undefined
                 const promise = axios.post(URLtrendings, body, config);
                 promise.then((res) => {
-                    console.log(res.data);
+                    hashtagId = res.response.data
                 });
                 promise.catch((err) => {
                     alert(err.response.data.message);
                 });
+
+                axios.post(`${URLtrendings}/posts`,{hashtag_id:hashtagId,post_id:postId},config)
+                .catch((err) => {
+                    alert(err.response.data.message);
+                });
+
+                console.log({hashtag_id:hashtagId,post_id:postId})
             });
 
 
@@ -60,17 +75,20 @@ export default function Posts({ picture }) {
         const body = { url, comment };
         axios
             .post(URLposts, body, config)
-            .then(() => {
+            .then((el) => {
                 alert("Post criado com sucesso");
                 setPublishURL("");
                 setComment("");
+                //setPostId(el.response.data)
                 getData(URLposts, setPosts, config);
+                //postHashTag();
             })
             .catch((err) => {
                 alert(err.response.data.message);
             });
 
-        postHashTag();
+    
+        
     }
 
     return (
