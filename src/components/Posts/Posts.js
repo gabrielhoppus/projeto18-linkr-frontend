@@ -17,9 +17,9 @@ export default function Posts({ picture }) {
 
 
     const URLposts = `${API_URL}/posts`;
+    const URLlikes = `${API_URL}/likes`;
     const URLtrendings = `${API_URL}/hashtag`;
 
-    const likes = 247;
     const config = {
         headers: {
             Authorization: `Bearer ${token}`,
@@ -28,9 +28,9 @@ export default function Posts({ picture }) {
 
 
     useEffect(() => {
-
         getData(URLposts, setPosts, config);
     });
+    
 
     function postHashTag() {
 
@@ -106,14 +106,17 @@ export default function Posts({ picture }) {
                 {posts.length ? (
                     posts.map((p) => (
                         <Post
+                            key={p.id}
                             id={p.id}
                             picture={p.picture}
                             username={p.username}
                             comment={p.comment}
                             url={p.url}
+                            user_id={p.user_id}
                             image={p.image}
-                            likes={likes}
+                            likes={p.like_count}
                             description={p.description}
+                            like_count={p.like_count}
                             modalvisible={modalvisible}
                             setModalvisible={setModalvisible}
                         />
