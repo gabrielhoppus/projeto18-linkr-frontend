@@ -6,6 +6,7 @@ import Timeline from "./pages/timeline.js";
 import { AuthProvider } from './contexts/auth.context'
 import User from "./pages/user.js";
 import HashtagPage from "./pages/hashtag.js";
+import 'react-tooltip/dist/react-tooltip.css';
 
 function App() {
 

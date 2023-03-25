@@ -15,6 +15,7 @@ export const UserPost = styled.div`
   ion-icon {
     font-size: 25px;
     margin-bottom: 5px;
+    margin-right: 20px;
     &:hover {
       cursor: pointer;
     }
@@ -41,17 +42,24 @@ export const StyledLink = styled(Link)`
   &:active {
     text-decoration: none;
   }
-
+  color: white;
   font-family: "Lato";
   font-style: normal;
+  font-size: 19px;
   font-weight: 400;
 `;
+export const HeaderWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
 export const Likes = styled.p`
   font-family: "Lato";
   font-style: normal;
   font-weight: 400;
   font-size: 11px;
   color: #ffffff;
+  margin-right: 20px;
 `;
 export const Wrapper = styled.div`
   width: 611px;
