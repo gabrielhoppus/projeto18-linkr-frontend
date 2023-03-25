@@ -47,13 +47,13 @@ export default function Timeline() {
 
   
 
-  // useEffect(() => {
-  //     const promise = axios.get(URLtrendings, config);
-  //     promise.then((res) => {
-  //         setHashtags(res.data);
-  //     })
-  //     promise.catch((err) => { alert(err.response.data.message) })
-  // }, [])
+  useEffect(() => {
+       const promise = axios.get(URLtrendings, config);
+       promise.then((res) => {
+           setHashtags(res.data);
+       })
+       promise.catch((err) => { alert(err.response.data.message) })
+   }, [])
 
   function deletePost(post_id) {
     axios
@@ -80,8 +80,7 @@ export default function Timeline() {
             <div className="line"></div>
             <span className="allTags">
               {hashtags.map((h) =>
-                console.log(h)
-                // <div key={h.id} className="tags">{`# ${h.name}`}</div>
+                <div key={el.id} className="tags">{`${el.name.replace("#",'# ')}`}</div>
               )}
             </span>
           </Trendings>

@@ -14,13 +14,13 @@ export default function Posts({ picture }) {
     const [comment, setComment] = useState("");
     const [url, setPublishURL] = useState("");
     const [modalvisible, setModalvisible] = useState(false);
-    const [postId , setPostId] = useState()
+    const [postId, setPostId] = useState()
 
 
     const URLposts = `${API_URL}/posts`;
-    const URLlikes = `${API_URL}/likes`;
     const URLtrendings = `${API_URL}/hashtag`;
 
+    const likes = 247;
     const config = {
         headers: {
             Authorization: `Bearer ${token}`,
@@ -29,16 +29,16 @@ export default function Posts({ picture }) {
 
 
     useEffect(() => {
+
         getData(URLposts, setPosts, config);
 
-        
 
-    },[]);
-    
+
+    }, []);
 
     function postHashTag() {
 
-        
+
 
         let commentArray = comment.split(" ");
 
@@ -49,21 +49,18 @@ export default function Posts({ picture }) {
         if (commentFiltered.length > 0) {
             commentFiltered.forEach((el) => {
                 const body = { name: el };
-                let hashtagId = undefined
+
                 const promise = axios.post(URLtrendings, body, config);
                 promise.then((res) => {
-                    hashtagId = res.response.data
+                    axios.post(`${URLtrendings}/posts`, { hashtag_id: res.data, post_id: postId }, config)
+                        .catch((err) => {
+                            alert(err.response.data.message);
+                        });
                 });
                 promise.catch((err) => {
                     alert(err.response.data.message);
                 });
 
-                axios.post(`${URLtrendings}/posts`,{hashtag_id:hashtagId,post_id:postId},config)
-                .catch((err) => {
-                    alert(err.response.data.message);
-                });
-
-                console.log({hashtag_id:hashtagId,post_id:postId})
             });
 
 
@@ -79,16 +76,16 @@ export default function Posts({ picture }) {
                 alert("Post criado com sucesso");
                 setPublishURL("");
                 setComment("");
-                //setPostId(el.response.data)
+                setPostId(el.data)
                 getData(URLposts, setPosts, config);
-                //postHashTag();
+                postHashTag();
             })
             .catch((err) => {
                 alert(err.response.data.message);
             });
 
-    
-        
+
+
     }
 
     return (
@@ -124,17 +121,14 @@ export default function Posts({ picture }) {
                 {posts.length ? (
                     posts.map((p) => (
                         <Post
-                            key={p.id}
                             id={p.id}
                             picture={p.picture}
                             username={p.username}
                             comment={p.comment}
                             url={p.url}
-                            user_id={p.user_id}
                             image={p.image}
-                            likes={p.like_count}
+                            likes={likes}
                             description={p.description}
-                            like_count={p.like_count}
                             modalvisible={modalvisible}
                             setModalvisible={setModalvisible}
                         />

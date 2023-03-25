@@ -48,13 +48,13 @@ export default function HashTagPage () {
 
   const { hashtagName } = useParams()
 
-  // useEffect(() => {
-  //     const promise = axios.get(URLtrendings, config);
-  //     promise.then((res) => {
-  //         setHashtags(res.data);
-  //     })
-  //     promise.catch((err) => { alert(err.response.data.message) })
-  // }, [])
+  useEffect(() => {
+      const promise = axios.get(URLtrendings, config);
+      promise.then((res) => {
+          setHashtags(res.data);
+      })
+      promise.catch((err) => { alert(err.response.data.message) })
+  }, [])
 
   function deletePost(post_id) {
     axios
@@ -80,9 +80,8 @@ export default function HashTagPage () {
             <p className="title">trending</p>
             <div className="line"></div>
             <span className="allTags">
-              {hashtags.map((h) =>
-                console.log(h)
-                // <div key={h.id} className="tags">{`# ${h.name}`}</div>
+              {hashtags.map((el) =>
+                <div key={el.id} className="tags">{`${el.name.replace("#",'# ')}`}</div>
               )}
             </span>
           </Trendings>
