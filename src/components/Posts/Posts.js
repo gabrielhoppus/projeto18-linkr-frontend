@@ -14,12 +14,13 @@ export default function Posts({ picture }) {
     const [comment, setComment] = useState("");
     const [url, setPublishURL] = useState("");
     const [modalvisible, setModalvisible] = useState(false);
+    const [postId, setPostId] = useState()
 
 
     const URLposts = `${API_URL}/posts`;
-    const URLlikes = `${API_URL}/likes`;
     const URLtrendings = `${API_URL}/hashtag`;
 
+    const likes = 247;
     const config = {
         headers: {
             Authorization: `Bearer ${token}`,
@@ -28,27 +29,38 @@ export default function Posts({ picture }) {
 
 
     useEffect(() => {
+
         getData(URLposts, setPosts, config);
-    });
-    
+
+
+
+    }, []);
 
     function postHashTag() {
+
+
 
         let commentArray = comment.split(" ");
 
         let commentFiltered = commentArray.filter((el) => el[0] === "#");
 
+        console.log(commentFiltered)
+
         if (commentFiltered.length > 0) {
             commentFiltered.forEach((el) => {
-                el.replace("#", "");
                 const body = { name: el };
+
                 const promise = axios.post(URLtrendings, body, config);
                 promise.then((res) => {
-                    console.log(res.data);
+                    axios.post(`${URLtrendings}/posts`, { hashtag_id: res.data, post_id: postId }, config)
+                        .catch((err) => {
+                            alert(err.response.data.message);
+                        });
                 });
                 promise.catch((err) => {
                     alert(err.response.data.message);
                 });
+
             });
 
 
@@ -60,17 +72,20 @@ export default function Posts({ picture }) {
         const body = { url, comment };
         axios
             .post(URLposts, body, config)
-            .then(() => {
+            .then((el) => {
                 alert("Post criado com sucesso");
                 setPublishURL("");
                 setComment("");
+                setPostId(el.data)
                 getData(URLposts, setPosts, config);
+                postHashTag();
             })
             .catch((err) => {
                 alert(err.response.data.message);
             });
 
-        postHashTag();
+
+
     }
 
     return (
@@ -106,17 +121,14 @@ export default function Posts({ picture }) {
                 {posts.length ? (
                     posts.map((p) => (
                         <Post
-                            key={p.id}
                             id={p.id}
                             picture={p.picture}
                             username={p.username}
                             comment={p.comment}
                             url={p.url}
-                            user_id={p.user_id}
                             image={p.image}
-                            likes={p.like_count}
+                            likes={likes}
                             description={p.description}
-                            like_count={p.like_count}
                             modalvisible={modalvisible}
                             setModalvisible={setModalvisible}
                         />
