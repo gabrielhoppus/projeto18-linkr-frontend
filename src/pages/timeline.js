@@ -46,6 +46,7 @@ export default function Timeline() {
     },
   };
 
+
   // useEffect(() => {
   //     const promise = axios.get(URLtrendings, config);
   //     promise.then((res) => {
@@ -53,6 +54,7 @@ export default function Timeline() {
   //     })
   //     promise.catch((err) => { alert(err.response.data.message) })
   // }, [])
+
 
   function getPostId(id) {
     setPostData(id);
@@ -89,10 +91,10 @@ export default function Timeline() {
           <Trendings>
             <p className="title">trending</p>
             <div className="line"></div>
-            <span className="allTags">
-              {hashtags.map(
-                (h) => console.log(h)
-                // <div key={h.id} className="tags">{`# ${h.name}`}</div>
+
+              {hashtags.map((el) =>
+                <div key={el.id} className="tags">{`${el.name.replace("#",'# ')}`}</div>
+
               )}
             </span>
           </Trendings>
