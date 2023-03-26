@@ -1,12 +1,15 @@
 import React from "react";
 import styled from "styled-components";
 import close from "../assets/images/closeIcon.svg";
+import { ThreeDots } from "react-loader-spinner";
 
 export default function DeleteModal({
   modalvisible,
   setModalvisible,
   deletePost,
   postData,
+  clicked,
+  setClicked,
 }) {
   return (
     <>
@@ -18,16 +21,42 @@ export default function DeleteModal({
         <ModalContainer>
           <h1>Tem certeza que deseja Excluir o post?</h1>
           <div>
-            <Modalbtn
-              color={"#CECECE"}
-              onClick={() => setModalvisible(!modalvisible)}
-            >
-              Não
-            </Modalbtn>
-
-            <Modalbtn color={"crimson"} onClick={() => deletePost(postData)}>
-              Excluir
-            </Modalbtn>
+            <div data-test="confirm">
+              <Modalbtn
+                color={"#CECECE"}
+                onClick={() => {
+                  setModalvisible(!modalvisible);
+                  setClicked(false);
+                }}
+              >
+                Não
+              </Modalbtn>
+            </div>
+            <div data-test="cancel">
+              <Modalbtn
+                color={"crimson"}
+                onClick={() => {
+                  setClicked(true);
+                  deletePost(postData);
+                }}
+                disabled={clicked}
+              >
+                {clicked ? (
+                  <ThreeDots
+                    color="white"
+                    width={80}
+                    height={40}
+                    // wrapperStyle={{
+                    //   display: clicked ? "flex" : "none",
+                    //   justifyContent: "center",
+                    //   alignItems: "center",
+                    // }}
+                  />
+                ) : (
+                  "Excluir"
+                )}
+              </Modalbtn>
+            </div>
           </div>
         </ModalContainer>
       </Modal>
