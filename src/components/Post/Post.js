@@ -2,8 +2,8 @@ import React, { useContext, useState, useEffect } from "react";
 import { ReactTagify } from "react-tagify";
 import { AuthContext } from "../../contexts/auth.context";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
-import { Tooltip as ReactTooltip, Tooltip } from 'react-tooltip'
+import axios from "axios";
+import { Tooltip as ReactTooltip, Tooltip } from "react-tooltip";
 import {
   Wrapper,
   UserPost,
@@ -16,7 +16,7 @@ import {
   Description,
   UrlContent,
   DataPost,
-  HeaderWrapper
+  HeaderWrapper,
 } from "./StyledPost";
 
 export default function Post({
@@ -31,7 +31,8 @@ export default function Post({
   modalvisible,
   setModalvisible,
   user_id,
-  like_count
+  like_count,
+  getPostId,
 }) {
   const { setName, API_URL, token } = useContext(AuthContext);
   const [liked, setLiked] = useState("heart-outline");
@@ -48,7 +49,7 @@ export default function Post({
     cursor: "pointer",
   };
 
-  const URLlikes = `${API_URL}/likes`
+  const URLlikes = `${API_URL}/likes`;
 
   const config = {
     headers: {
@@ -60,7 +61,7 @@ export default function Post({
     getLikes();
     userLiked();
     if (userLikes.includes(id)) {
-      setLiked("heart")
+      setLiked("heart");
       setColor("red");
     } else {
       setLiked("heart-outline");
@@ -72,22 +73,22 @@ export default function Post({
     axios
       .get(URLlikes, config)
       .then((res) => {
-        setLikes(res.data)
+        setLikes(res.data);
       })
       .catch((err) => {
-        alert(err.message)
-      })
+        alert(err.message);
+      });
   }
 
-  function userLiked(){
+  function userLiked() {
     axios
       .get(`${URLlikes}/${id}`, config)
       .then((res) => {
-        setLikedBy(res.data)
+        setLikedBy(res.data);
       })
       .catch((err) => {
-        alert(err.message)
-      })
+        alert(err.message);
+      });
   }
 
   function likePost(id) {
@@ -96,7 +97,7 @@ export default function Post({
       axios
         .post(URLlikes, body, config)
         .then(() => {
-          console.log("ok delete")
+          console.log("ok delete");
         })
         .catch((err) => {
           alert(err.message);
@@ -107,7 +108,7 @@ export default function Post({
       axios
         .post(URLlikes, body, config)
         .then(() => {
-          console.log("ok like")
+          console.log("ok like");
         })
         .catch((err) => {
           alert(err.datamessage);
@@ -122,18 +123,18 @@ export default function Post({
     navigate(`/hashtag/${tag}`);
   }
 
-
   return (
     <Wrapper>
       <UserPost>
         <img src={picture} alt="user"></img>
-          <ion-icon
-            data-tooltip-id="my-tooltip" data-tooltip-content={likedby}
-            onClick={() => likePost(id)}
-            style={{ color: cor }}
-            name={liked}
-          ></ion-icon>
-          <Tooltip id="my-tooltip" />
+        <ion-icon
+          data-tooltip-id="my-tooltip"
+          data-tooltip-content={likedby}
+          onClick={() => likePost(id)}
+          style={{ color: cor }}
+          name={liked}
+        ></ion-icon>
+        <Tooltip id="my-tooltip" />
         <Likes>{`${like_count} likes`}</Likes>
       </UserPost>
       <DataPost>
@@ -146,8 +147,15 @@ export default function Post({
             <EditIcon onClick={() => setEditPost(!editPost)}>
               <ion-icon name="create-outline"></ion-icon>
             </EditIcon>
-            <TrashIcon onClick={() => setModalvisible(!modalvisible)}>
-              <ion-icon name="trash-outline"></ion-icon>
+            <TrashIcon
+              onClick={() => {
+                setModalvisible(!modalvisible);
+                getPostId(id);
+              }}
+            >
+              <div data-test="delete-btn">
+                <ion-icon name="trash-outline"></ion-icon>
+              </div>
             </TrashIcon>
           </IconContainer>
         </HeaderWrapper>

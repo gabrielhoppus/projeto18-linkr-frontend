@@ -11,13 +11,13 @@ import { IoPencil, IoTrashOutline } from "react-icons/io5";
 import swal from "sweetalert";
 import Posts from "../components/Posts/Posts";
 import { getData } from "../functions/postFunctions";
+import { click } from "@testing-library/user-event/dist/click";
 
 export default function Timeline() {
   const { API_URL, name, picture, setName } = useContext(AuthContext);
   const token = localStorage.getItem("token");
 
   const navigate = useNavigate();
-
 
   useEffect(() => {
     if (!token) {
@@ -28,12 +28,13 @@ export default function Timeline() {
       });
       navigate("/");
     }
-  });
+  }, []);
 
   const [posts, setPosts] = useState([]);
   const [hashtags, setHashtags] = useState([]);
 
   const [modalvisible, setModalvisible] = useState(false);
+  const [clicked, setClicked] = useState(false);
 
   const URLposts = `${API_URL}/posts`;
   const URLtrendings = `${API_URL}/hashtag`;
@@ -45,8 +46,6 @@ export default function Timeline() {
     },
   };
 
-  
-
   // useEffect(() => {
   //     const promise = axios.get(URLtrendings, config);
   //     promise.then((res) => {
@@ -55,16 +54,23 @@ export default function Timeline() {
   //     promise.catch((err) => { alert(err.response.data.message) })
   // }, [])
 
+  function getPostId(id) {
+    setPostData(id);
+    console.log(id);
+  }
+
   function deletePost(post_id) {
     axios
-      .post(`${URLposts}/${post_id}`, config)
+      .delete(`${URLposts}/${post_id}`, config)
       .then(() => {
+        setClicked(false);
         alert("Post deletado com sucesso");
         setModalvisible(!modalvisible);
         getData(URLposts, config, setPosts);
       })
       .catch((err) => {
         alert(err.response.data.message);
+        setClicked(false);
       });
   }
 
@@ -74,13 +80,18 @@ export default function Timeline() {
       <TimelinePosts>
         <title>timeline</title>
         <Section>
-          <Posts picture={picture}/>
+          <Posts
+            picture={picture}
+            modalvisible={modalvisible}
+            setModalvisible={setModalvisible}
+            getPostId={getPostId}
+          />
           <Trendings>
             <p className="title">trending</p>
             <div className="line"></div>
             <span className="allTags">
-              {hashtags.map((h) =>
-                console.log(h)
+              {hashtags.map(
+                (h) => console.log(h)
                 // <div key={h.id} className="tags">{`# ${h.name}`}</div>
               )}
             </span>
@@ -93,6 +104,8 @@ export default function Timeline() {
           setModalvisible={setModalvisible}
           deletePost={deletePost}
           postData={postData}
+          clicked={clicked}
+          setClicked={setClicked}
         />
       ) : (
         ""
@@ -180,4 +193,3 @@ const Trendings = styled.aside`
     }
   }
 `;
-
