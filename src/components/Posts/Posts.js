@@ -40,7 +40,7 @@ export default function Posts({
 
     let commentFiltered = commentArray.filter((el) => el[0] === "#");
 
-    console.log(commentFiltered);
+    // console.log(commentFiltered);
 
     if (commentFiltered.length > 0) {
       commentFiltered.forEach((el) => {
@@ -51,7 +51,7 @@ export default function Posts({
           axios
             .post(
               `${URLtrendings}/posts`,
-              { hashtag_id: res.data, post_id: postId },
+              { hashtag_id: res.data.id, post_id: postId.id },
               config
             )
             .catch((err) => {
