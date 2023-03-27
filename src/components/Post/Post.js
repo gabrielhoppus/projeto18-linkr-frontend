@@ -3,6 +3,7 @@ import { ReactTagify } from "react-tagify";
 import { AuthContext } from "../../contexts/auth.context";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { getData } from "../../functions/postFunctions";
 import { Tooltip as ReactTooltip, Tooltip } from "react-tooltip";
 import {
   Wrapper,
@@ -40,6 +41,8 @@ export default function Post({
   const [likedby, setLikedBy] = useState([]);
   const [cor, setColor] = useState("#ffffff");
   const [editPost, setEditPost] = useState(false);
+  const [editValue, setEditValue] = useState("");
+  const [clicked, setClicked] = useState(false);
 
   const navigate = useNavigate();
 
@@ -118,9 +121,40 @@ export default function Post({
     }
   }
 
+  function patchPost(id) {
+    const body = { comment: editValue };
+    axios
+      .patch(`${API_URL}/posts/${id}`, body, config)
+      .then(() => {
+        setClicked(false);
+        setEditPost(false);
+
+        //getData(URLposts, config, setPosts);
+      })
+      .catch((err) => {
+        console.log(body, config);
+        alert(err.response.data.message);
+        setClicked(false);
+      });
+  }
+
   function handleTagClick(tag) {
     tag = tag.replace("#", "");
     navigate(`/hashtag/${tag}`);
+  }
+
+  function handleKeyDown(event) {
+    if (event.key === "Escape") {
+      setEditPost(false);
+    }
+    if (event.key === "Enter") {
+      event.preventDefault();
+      setClicked(true);
+      patchPost(id);
+
+      // setClicked(true);
+      // patchPost(id);
+    }
   }
 
   return (
@@ -143,10 +177,16 @@ export default function Post({
             {username}
           </StyledLink>
           <IconContainer>
-            {" "}
-            <EditIcon onClick={() => setEditPost(!editPost)}>
-              <ion-icon name="create-outline"></ion-icon>
-            </EditIcon>
+            <div data-test="edit-btn">
+              <EditIcon
+                onClick={() => {
+                  setEditPost(!editPost);
+                  setEditValue("");
+                }}
+              >
+                <ion-icon name="create-outline"></ion-icon>
+              </EditIcon>
+            </div>
             <TrashIcon
               onClick={() => {
                 setModalvisible(!modalvisible);
@@ -160,9 +200,22 @@ export default function Post({
           </IconContainer>
         </HeaderWrapper>
         {editPost === true ? (
-          <EditInput></EditInput>
+          <EditInput>
+            <input
+              data-test="edit-input"
+              autoFocus={true}
+              type="text"
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+              disabled={clicked}
+            />
+          </EditInput>
         ) : (
-          <ReactTagify tagStyle={tagStyle} tagClicked={(tag)=>handleTagClick(tag)}>
+          <ReactTagify
+            tagStyle={tagStyle}
+            tagClicked={(tag) => handleTagClick(tag)}
+          >
             <Description>{comment}</Description>
           </ReactTagify>
         )}

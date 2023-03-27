@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import close from "../assets/images/closeIcon.svg";
 import { ThreeDots } from "react-loader-spinner";
+import { FlexConteiner } from "./flexContainer";
 
 export default function DeleteModal({
   modalvisible,
@@ -20,7 +21,7 @@ export default function DeleteModal({
         </Closebtn>
         <ModalContainer>
           <h1>Tem certeza que deseja Excluir o post?</h1>
-          <div>
+          <FlexConteiner>
             <div data-test="confirm">
               <Modalbtn
                 color={"#CECECE"}
@@ -57,7 +58,7 @@ export default function DeleteModal({
                 )}
               </Modalbtn>
             </div>
-          </div>
+          </FlexConteiner>
         </ModalContainer>
       </Modal>
     </>
