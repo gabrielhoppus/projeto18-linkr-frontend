@@ -52,7 +52,7 @@ export default function Posts({
           axios
             .post(
               `${URLtrendings}/posts`,
-              { hashtag_id: res.data.id, post_id: postId },
+              { hashtag_id: res.data.id, post_id: postId.id },
               config
             )
             .catch((err) => {
