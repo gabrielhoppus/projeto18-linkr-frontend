@@ -4,137 +4,140 @@ import styled from "styled-components";
 
 import Post from "../Post/Post";
 import { AuthContext } from "../../contexts/auth.context";
-import { getData } from "../../functions/postFunctions";
+import useMyHook, { getData } from "../../functions/postFunctions";
+import InfiniteScroll from "react-infinite-scroller";
+import useGetData from "../../functions/postFunctions";
 
 export default function Posts({
-  picture,
-  modalvisible,
-  setModalvisible,
-  getPostId,
+    picture,
+    modalvisible,
+    setModalvisible,
+    getPostId,
 }) {
-  const token = localStorage.getItem("token");
-  const { API_URL } = useContext(AuthContext);
+    const token = localStorage.getItem("token");
+    const { API_URL } = useContext(AuthContext);
 
-  const [posts, setPosts] = useState([]);
-  const [comment, setComment] = useState("");
-  const [url, setPublishURL] = useState("");
+    const [posts, setPosts] = useState([]);
+    const [comment, setComment] = useState("");
+    const [url, setPublishURL] = useState("");
 
-  const [postId, setPostId] = useState();
+    const [postId, setPostId] = useState();
 
-  const URLposts = `${API_URL}/posts`;
-  const URLtrendings = `${API_URL}/hashtag`;
+    const URLposts = `${API_URL}/posts`;
+    const URLtrendings = `${API_URL}/hashtag`;
 
-  const likes = 247;
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
+    const likes = 247;
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    };
 
-  useEffect(() => {
-    getData(URLposts, setPosts, config);
-  }, [posts]);
+    useGetData(URLposts, setPosts, config);
 
-  function postHashTag() {
-    let commentArray = comment.split(" ");
+    function postHashTag() {
+        let commentArray = comment.split(" ");
 
-    let commentFiltered = commentArray.filter((el) => el[0] === "#");
+        let commentFiltered = commentArray.filter((el) => el[0] === "#");
 
-    // console.log(commentFiltered);
+        // console.log(commentFiltered);
 
-    if (commentFiltered.length > 0) {
-      commentFiltered.forEach((el) => {
-        const body = { name: el };
+        if (commentFiltered.length > 0) {
+            commentFiltered.forEach((el) => {
+                const body = { name: el };
 
-        const promise = axios.post(URLtrendings, body, config);
-        promise.then((res) => {
-          axios
-            .post(
-              `${URLtrendings}/posts`,
-              { hashtag_id: res.data.id, post_id: postId.id },
-              config
-            )
-            .catch((err) => {
-              alert(err.response.data.message);
+                const promise = axios.post(URLtrendings, body, config);
+                promise.then((res) => {
+                    axios
+                        .post(
+                            `${URLtrendings}/posts`,
+                            { hashtag_id: res.data.id, post_id: postId.id },
+                            config
+                        )
+                        .catch((err) => {
+                            alert(err.response.data.message);
+                        });
+                });
+                promise.catch((err) => {
+                    alert(err.response.data.message);
+                });
             });
-        });
-        promise.catch((err) => {
-          alert(err.response.data.message);
-        });
-      });
+        }
     }
-  }
 
-  function publishPost(e) {
-    e.preventDefault();
-    const body = { url, comment };
-    axios
-      .post(URLposts, body, config)
-      .then((el) => {
-        alert("Post criado com sucesso");
-        setPublishURL("");
-        setComment("");
-        setPostId(el.data);
-        getData(URLposts, setPosts, config);
-        postHashTag();
-      })
-      .catch((err) => {
-        alert(err.response.data.message);
-      });
-  }
+    function publishPost(e) {
+        e.preventDefault();
+        const body = { url, comment };
+        axios
+            .post(URLposts, body, config)
+            .then((el) => {
+                alert("Post criado com sucesso");
+                setPublishURL("");
+                setComment("");
+                setPostId(el.data);
+                getData(URLposts, setPosts, config);
+                postHashTag();
+            })
+            .catch((err) => {
+                alert(err.response.data.message);
+            });
+    }
 
-  return (
-    <Wrapper>
-      <div>
-        <Publish>
-          <div>
-            <img src={picture} alt="user" />
-          </div>
-          <div>
-            <form onSubmit={publishPost}>
-              <h3>What are you going to share today?</h3>
-              <input
-                type="text"
-                placeholder="http://..."
-                value={url}
-                onChange={(e) => setPublishURL(e.target.value)}
-                required
-              />
-              <input
-                type="text"
-                placeholder="Awesome article about #javascript"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                required
-              />
-              <button type="submit">Publish</button>
-            </form>
-          </div>
-        </Publish>
-      </div>
-      <div>
-        {posts.length ? (
-          posts.map((p) => (
-            <Post
-              id={p.id}
-              picture={p.picture}
-              username={p.username}
-              comment={p.comment}
-              url={p.url}
-              image={p.image}
-              likes={likes}
-              description={p.description}
-              modalvisible={modalvisible}
-              setModalvisible={setModalvisible}
-              getPostId={getPostId}
-            />
-          ))
-        ) : (
-          <></>
-        )}
-      </div>
-    </Wrapper>
-  );
+    return (
+        <Wrapper>
+            <div>
+                <Publish>
+                    <div>
+                        <img src={picture} alt="user" />
+                    </div>
+                    <div>
+                        <form onSubmit={publishPost}>
+                            <h3>What are you going to share today?</h3>
+                            <input
+                                type="text"
+                                placeholder="http://..."
+                                value={url}
+                                onChange={(e) => setPublishURL(e.target.value)}
+                                required
+                            />
+                            <input
+                                type="text"
+                                placeholder="Awesome article about #javascript"
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                                required
+                            />
+                            <button type="submit">Publish</button>
+                        </form>
+                    </div>
+                </Publish>
+            </div>
+            <InfiniteScroll
+                pageStart={0}
+                loader={<div>Loading...</div>}
+            >
+                {posts.length ? (
+                    posts.map((p) => (
+                        <Post
+                            id={p.id}
+                            picture={p.picture}
+                            username={p.username}
+                            comment={p.comment}
+                            url={p.url}
+                            image={p.image}
+                            likes={likes}
+                            description={p.description}
+                            modalvisible={modalvisible}
+                            setModalvisible={setModalvisible}
+                            getPostId={getPostId}
+                        />
+                    ))
+                ) : (
+                    <></>
+                )}
+            </InfiniteScroll>
+        </Wrapper>
+    );
 }
 
 const Wrapper = styled.div`
