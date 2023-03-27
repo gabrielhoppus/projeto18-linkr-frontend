@@ -48,7 +48,6 @@ export default function Posts({
 
         const promise = axios.post(URLtrendings, body, config);
         promise.then((res) => {
-          console.log("res.data: ", res.data.id, "postId: ", postId.id);
           axios
             .post(
               `${URLtrendings}/posts`,
