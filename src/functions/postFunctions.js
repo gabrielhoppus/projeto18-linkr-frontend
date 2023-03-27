@@ -1,9 +1,9 @@
 import swal from "sweetalert";
 import axios from 'axios';
+import { useEffect } from "react";
 
 
 export const getData = async (URL, setState, config) => {
-
     try {
         if (config) {
             const response = await axios.get(URL, config);
@@ -22,4 +22,11 @@ export const getData = async (URL, setState, config) => {
             icon: "error"
         });
     }
+}
+
+export default function useGetData(URL, setState, config) {
+    useEffect(() => {
+        getData(URL, setState, config)
+    }, [setState])
+    return null
 }
