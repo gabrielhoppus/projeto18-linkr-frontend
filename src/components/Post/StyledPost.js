@@ -93,13 +93,16 @@ export const IconContainer = styled.div`
   display: flex;
 `;
 
-export const EditInput = styled.input`
-  border-radius: 7px;
-  margin: 7px 0;
-  height: 44px;
-  font-family: "Lato";
-  font-size: 18px;
-  padding-left: 7px;
+export const EditInput = styled.div`
+  input {
+    width: 100%;
+    border-radius: 7px;
+    margin: 7px 0;
+    height: 44px;
+    font-family: "Lato";
+    font-size: 18px;
+    padding-left: 7px;
+  }
 `;
 
 export const NaviIcon = styled.div`
