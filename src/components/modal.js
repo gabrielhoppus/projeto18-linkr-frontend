@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import close from "../assets/images/closeIcon.svg";
 import { ThreeDots } from "react-loader-spinner";
-import { FlexConteiner } from "./flexContainer";
+import { FlexConteiner } from "./flexContainer.js";
 
 export default function DeleteModal({
   modalvisible,
